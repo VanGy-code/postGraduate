@@ -13,5 +13,15 @@ class PostgraduateItem(scrapy.Item):
     # name = scrapy.Field()
     pass
 
+# 研招网Item
 class yanzhaowangItem(scrapy.Item):
     collection = table = 'yanzhaowang'
+    Institution = scrapy.Field()
+    location = scrapy.Field()
+    subjection = scrapy.Field()
+    is985 = scrapy.Field()
+    is211 = scrapy.Field()
+    haveGraduateSchool = scrapy.Field()
+    isSelfMarkingSchool = scrapy.Field()
+    url = scrapy.Field()
+
