@@ -25,3 +25,17 @@ class yanzhaowangItem(scrapy.Item):
     isSelfMarkingSchool = scrapy.Field()
     url = scrapy.Field()
 
+# 考试点Item
+class kaoshidianItem(scrapy.Item):
+    collection = table = 'kaoshiwang'
+    Institution = scrapy.Field()
+    location = scrapy.Field()
+    collegeType = scrapy.Field()
+    natureOfCollege = scrapy.Field()
+    collegeRank = scrapy.Field()
+    collegeAttrs = scrapy.Field()
+    areaCompetition = scrapy.Field()
+    graduateSchoolRank = scrapy.Field()
+    collegeInfo = scrapy.Field()
+
+

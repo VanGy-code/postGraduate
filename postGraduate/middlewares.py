@@ -103,7 +103,7 @@ class PostgraduateDownloaderMiddleware(object):
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
 
-# 用户头Middleware
+
 class RandomUserAgentMiddleware(object):
     def __init__(self):
         self.user_agent_list = [

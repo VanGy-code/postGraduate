@@ -89,7 +89,7 @@ AUTOTHROTTLE_MAX_DELAY = 30
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-MYSQL_HOST = ''
+MYSQL_HOST = '47.102.139.163'
 
 MYSQL_PORT = 3306
 
