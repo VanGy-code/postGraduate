@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from scrapy.linkextractors import LinkExtractor
+from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from postGraduate.items import yanzhaowangItem
 from bs4 import BeautifulSoup
@@ -8,6 +9,7 @@ import lxml
 import re
 
 
+    
 class YanzhaowangSpiderSpider(CrawlSpider):
     name = 'yanzhaowang_spider'
     allowed_domains = ['yz.chsi.com.cn']
@@ -20,12 +22,20 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         #      restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]', callback='parse_item', follow=True),
 
         # next page(下一页)
-        # Rule(LinkExtractor(allow=r'sch/schoolInfo--schId-.*\.dhtml',
-        #                    restrict_xpaths='//div[contains(@class,"pager-box")]'
-        #                                    '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/../@href'))
+        Rule(LxmlLinkExtractor(allow=r'sch/schoolInfo--schId-.*\.dhtml',
+                            restrict_xpaths='//div[contains(@class,"pager-box")]'
+                                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/../@href')
+                                           ,callback='parse_index_url')
     )
 
-    def parse_start_url(self, response):
+ 
+    # def process_index_value(self,value):
+    #     base_url = 'https://yz.chsi.com.cn'
+    #     value = base_url + value
+    #     if value:
+    #         return value
+
+    def parse_index_url(self, response):
         # 原本用 xpath 写得解析方法但是就是出现了一些未知的错误，所以干脆用比较熟悉的BeautifulSoup爽一点
         soup = BeautifulSoup(response.body, 'lxml')
         table = soup.find('table', attrs={"class": "ch-table"})
@@ -92,10 +102,10 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         # 获取下一页，并添加请求
         # 鬼知道这个链接地址是藏在href里的，而且解析出来的东西需要连接之后才能生成请求，想用rule都用不了
         # 所以我开一个crawler_spider的意义何在???
-        next_page_url = self.base_url+response.xpath('//div[contains(@class,"pager-box")]//ul[contains(@class,'
-                                                         '"ch-page")]//li[@class="lip "]//i['
-                                                         '@class="iconfont"]/../@href').get()
-        yield scrapy.Request(next_page_url, callback=self.parse_start_url)
+        # next_page_url = self.base_url+response.xpath('//div[contains(@class,"pager-box")]//ul[contains(@class,'
+        #                                                  '"ch-page")]//li[@class="lip "]//i['
+        #                                                  '@class="iconfont"]/../@href').get()
+        # yield scrapy.Request(next_page_url, callback=self.parse_start_url)
         
     def parse_schoolItem(self, response):
         pass

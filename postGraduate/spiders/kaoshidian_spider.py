@@ -18,7 +18,7 @@ class KaoshidianSpiderSpider(CrawlSpider):
         Rule(LinkExtractor(allow=r'/kaoyan/school\/.*\.html', restrict_xpaths='//div[@class="main"]//div[contains(@class,"list_data")]//dd//a[contains(@class,"green")]'),
              callback='parse_item', follow=True),
         # <a href="http://www.kaoshidian.com/kaoyan/yx-0-0-0-0-2.html">下一页</a>
-        #Rule(LinkExtractor(allow=r'/kaoyan\/.*\.html',restrict_xpaths='//div[@class="pageblk"]//div[@class="l"]//span[contains(.,"下一页")]'))
+        Rule(LinkExtractor(allow=r'/kaoyan\/.*\.html',restrict_xpaths='//div[@class="pageblk"]//div[@class="l"]//span[contains(.,"下一页")]'))
     )
     
     # def parse_start_url(self, response):
