@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from scrapy.linkextractors import LinkExtractor
-from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from postGraduate.items import yanzhaowangItem
+from postGraduate.items import yanzhaowangIntroItem
 from bs4 import BeautifulSoup
 import lxml
 import re
@@ -16,18 +15,55 @@ class YanzhaowangSpiderSpider(CrawlSpider):
     start_urls = ['https://yz.chsi.com.cn/sch/']
     base_url = 'https://yz.chsi.com.cn'
 
-    # 所需的信息在目录页也有，就不定义Rule了
     rules = (
-        # Rule(LinkExtractor(allow=r'sch/schoolInfo--schId-.*\.dhtml'),
-        #      restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]', callback='parse_item', follow=True),
-
-        # # next page(下一页)
+        # 院校信息
+        Rule(LinkExtractor(allow=r'sch/schoolInfo--schId-.*\.dhtml',
+             restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'), callback='parse_school_item', follow=True),
+       
+        # next page(下一页) follow是否跟进链接
         Rule(LinkExtractor(allow=r'\?start=\d+',
                             restrict_xpaths='//div[contains(@class,"pager-box")]'
                                            '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
-                                           callback='parse_index_url',follow=True),
+                                           callback='parse_index_url',follow=False),
 
-        # Rule(LinkExtractor(allow=(r'/sch/\?start=\d+')),process_links="deal_link",callback='parse_index_url'),
+        # 院校简介
+        Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+                            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
+                            callback='parse_school_info',follow=True),
+
+        # 院校设置
+        Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+                            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校设置")]'),
+                            callback='parse_school_settings',follow=True),
+
+        # 专业介绍
+        Rule(LinkExtractor(allow=r"/sch/listYzZyjs--schId-\d+\,categoryId-\d+\.dhtml",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+                            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"专业介绍")]'),
+                            callback='parse_department_info',follow=True
+                            ),
+
+        # 录取规则
+        Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+                            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"录取规则")]'),
+                            callback='parse_admission_rules',follow=True),
+
+        # 调剂政策
+        Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+                            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"调剂政策")]'),
+                            callback='parse_adjust_policy',follow=True),
+        
+        # 招生简章
+
+        # 信息发布
+
+        # 网报公告
+
+        # 调剂办法
     )
 
     def parse_start_url(self, response):
@@ -35,14 +71,14 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
 
     def parse_index_url(self, response):
-        # 原本用 xpath 写得解析方法但是就是出现了一些未知的错误，所以干脆用比较熟悉的BeautifulSoup爽一点
+        # 比较熟悉的BeautifulSoup爽一点
         soup = BeautifulSoup(response.body, 'lxml')
         table = soup.find('table', attrs={"class": "ch-table"})
         table = table.find('tbody')
         table = table.findAll('tr')
 
         for school in table:
-            item = yanzhaowangItem()
+            item = yanzhaowangIntroItem()
             attrs = school.findAll('td')
 
             # 解析出学校名
@@ -98,21 +134,27 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                 item['isSelfMarkingSchool'] = False
             yield item
     
-    # def parse_start_url(self, response):
-        # # 获取下一页，并添加请求
-        # # 鬼知道这个链接地址是藏在href里的，而且解析出来的东西需要连接之后才能生成请求，想用rule都用不了
-        # # 所以我开一个crawler_spider的意义何在???
-        # next_page_url = self.base_url+response.xpath('//div[contains(@class,"pager-box")]//ul[contains(@class,'
-        #                                                  '"ch-page")]//li[@class="lip "]//i['
-        #                                                  '@class="iconfont"]/../@href').get()
-        # yield scrapy.Request(next_page_url, callback=self.parse_start_url)
+
         
-    def parse_schoolItem(self, response):
+    def parse_school_info(self, response):
+        self.logger.debug(response.test+" 院校简介");
         pass
 
-    def parse_item(self, response):
-        item = {}
-        # item['domain_id'] = response.xpath('//input[@id="sid"]/@value').get()
-        # item['name'] = response.xpath('//div[@id="name"]').get()
-        # item['description'] = response.xpath('//div[@id="description"]').get()
-        return item
+    def parse_school_settings(self, response):
+        self.logger.debug(response.text+" 院系设置")
+        pass
+
+    def parse_department_info(self, response):
+        self.logger.debug(response.text+" 专业介绍")
+        pass
+    
+    def parse_adjust_policy(self, response):
+        self.logger.debug(response.text+" 调剂策略")
+        pass
+    
+    def parse_admission_rules(self, response):
+        self.logger.debug(response.text+" 录取规则")
+        pass
+
+    def parse_school_item(self, response):
+        pass

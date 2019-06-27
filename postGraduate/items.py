@@ -13,9 +13,9 @@ class PostgraduateItem(scrapy.Item):
     # name = scrapy.Field()
     pass
 
-# 研招网Item
-class yanzhaowangItem(scrapy.Item):
-    collection = table = 'yanzhaowang'
+# 研招网简介Item
+class yanzhaowangIntroItem(scrapy.Item):
+    collection = table = 'Intro'
     Institution = scrapy.Field()
     location = scrapy.Field()
     subjection = scrapy.Field()
@@ -24,6 +24,29 @@ class yanzhaowangItem(scrapy.Item):
     haveGraduateSchool = scrapy.Field()
     isSelfMarkingSchool = scrapy.Field()
     url = scrapy.Field()
+
+class collegeInfoItem(scrapy.Item):
+    collection = table = 'schoolInfo'
+    collegeName = scrapy.Field()
+    collegeLeaderInfoUrl = scrapy.Field()
+    collegelIntroUrl = scrapy.Field()
+    surrounding = scrapy.Field()
+
+
+class schoolSettingItem(scrapy.Item):
+    collection = table = 'schoolSetting'
+    collegeName = scrapy.Field()
+    schoolName = scrapy.Field()
+
+class specialtyInfoItem(scrapy.Item):
+    collection = table = 'specialtyInfo'
+    collegeName = scrapy.Field()
+    specialtyName = scrapy.Field()
+
+class admissionRuleItem(scrapy.Item):
+    pass
+    
+
 
 # 考试点Item
 class kaoshidianItem(scrapy.Item):
