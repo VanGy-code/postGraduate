@@ -57,13 +57,18 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                             '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"调剂政策")]'),
                             callback='parse_adjust_policy',follow=True),
         
-        # 招生简章
+        # 更多招生简章
+        Rule(LinkExtractor(allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
+                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                            '//div[contains(@class,"yxk-column-left")]//a[contains(.,"更多")]'),follow=True),
 
-        # 信息发布
+        # 更多信息发布
+        Rule(LinkExtractor(allow=r"")),
 
-        # 网报公告
+        # 更多网报公告
 
-        # 调剂办法
+        # 更多调剂办法
+
     )
 
     def parse_start_url(self, response):
@@ -137,7 +142,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
         
     def parse_school_info(self, response):
-        self.logger.debug(response.test+" 院校简介");
+        self.logger.debug(response.test+" 院校简介")
         pass
 
     def parse_school_settings(self, response):

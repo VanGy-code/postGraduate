@@ -44,9 +44,13 @@ class specialtyInfoItem(scrapy.Item):
     specialtyName = scrapy.Field()
 
 class admissionRuleItem(scrapy.Item):
-    pass
+    collection = table = 'admissionRule'
+    admissionPolicy = scrapy.Field()
+    crossDisciplinaryPolicy = scrapy.Field()
     
-
+class adjustPolicyItem(scrapy.Item):
+    collection = table = 'adjustPolicy'
+    adjustPolicy = scrapy.Field()
 
 # 考试点Item
 class kaoshidianItem(scrapy.Item):
