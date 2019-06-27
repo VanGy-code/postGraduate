@@ -21,19 +21,18 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         # Rule(LinkExtractor(allow=r'sch/schoolInfo--schId-.*\.dhtml'),
         #      restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]', callback='parse_item', follow=True),
 
-        # next page(下一页)
-        Rule(LxmlLinkExtractor(allow=r'sch/schoolInfo--schId-.*\.dhtml',
+        # # next page(下一页)
+        Rule(LinkExtractor(allow=r'\?start=\d+',
                             restrict_xpaths='//div[contains(@class,"pager-box")]'
-                                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/../@href')
-                                           ,callback='parse_index_url')
+                                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
+                                           callback='parse_index_url',follow=True),
+
+        # Rule(LinkExtractor(allow=(r'/sch/\?start=\d+')),process_links="deal_link",callback='parse_index_url'),
     )
 
- 
-    # def process_index_value(self,value):
-    #     base_url = 'https://yz.chsi.com.cn'
-    #     value = base_url + value
-    #     if value:
-    #         return value
+    def parse_start_url(self, response):
+        self.parse_index_url(response)
+
 
     def parse_index_url(self, response):
         # 原本用 xpath 写得解析方法但是就是出现了一些未知的错误，所以干脆用比较熟悉的BeautifulSoup爽一点
@@ -98,10 +97,11 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             else:
                 item['isSelfMarkingSchool'] = False
             yield item
-
-        # 获取下一页，并添加请求
-        # 鬼知道这个链接地址是藏在href里的，而且解析出来的东西需要连接之后才能生成请求，想用rule都用不了
-        # 所以我开一个crawler_spider的意义何在???
+    
+    # def parse_start_url(self, response):
+        # # 获取下一页，并添加请求
+        # # 鬼知道这个链接地址是藏在href里的，而且解析出来的东西需要连接之后才能生成请求，想用rule都用不了
+        # # 所以我开一个crawler_spider的意义何在???
         # next_page_url = self.base_url+response.xpath('//div[contains(@class,"pager-box")]//ul[contains(@class,'
         #                                                  '"ch-page")]//li[@class="lip "]//i['
         #                                                  '@class="iconfont"]/../@href').get()
