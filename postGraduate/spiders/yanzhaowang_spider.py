@@ -2,13 +2,12 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from postGraduate.items import yanzhaowangIntroItem,collegeInfoItem
+from postGraduate.items import yanzhaowangIntroItem, collegeInfoItem, enrollmentGuideIndexItem, enrollmentGuideArticleItem
 from bs4 import BeautifulSoup
 import lxml
 import re
 
 
-    
 class YanzhaowangSpiderSpider(CrawlSpider):
     name = 'yanzhaowang_spider'
     allowed_domains = ['yz.chsi.com.cn']
@@ -17,35 +16,38 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
     rules = (
         # 院校库
-        Rule(LinkExtractor(allow=r'/sch/',restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'),follow=True),
+        Rule(LinkExtractor(allow=r'/sch/',
+                           restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'), follow=True),
+
+        # 专业库
 
         # 院校信息
         Rule(LinkExtractor(allow=r'sch/schoolInfo--schId-.*\.dhtml',
-             restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'), callback='parse_school_item', follow=True),
-       
+                           restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'), follow=True),
+
         # next page(下一页) follow是否跟进链接
         Rule(LinkExtractor(allow=r'\?start=\d+',
-                            restrict_xpaths='//div[contains(@class,"pager-box")]'
-                                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
-                                           callback='parse_index_url',follow=False),
+                           restrict_xpaths='//div[contains(@class,"pager-box")]'
+                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
+             callback='parse_index_url', follow=False),
 
         # 院校简介
         Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-                            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
-                            callback='parse_school_info',follow=True),
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+                           '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
+             callback='parse_school_info', follow=True),
 
         # 院校设置
-        Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-                            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校设置")]'),
-                            callback='parse_school_settings',follow=False),
+        # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+        #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+        #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校设置")]'),
+        #                     callback='parse_school_settings',follow=False),
 
-        # 专业介绍
+        # # 专业介绍
         # Rule(LinkExtractor(allow=r"/sch/listYzZyjs--schId-\d+\,categoryId-\d+\.dhtml",
         #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
         #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"专业介绍")]'),
-        #                     callback='parse_department_info',follow=False
+        #                     callback='parse_specialty_info',follow=False
         #                     ),
 
         # 录取规则
@@ -56,14 +58,13 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
         # 调剂政策
         # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
         #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"调剂政策")]'),
         #                     callback='parse_adjust_policy',follow=False),
-        
+
         # 更多招生简章
-        # Rule(LinkExtractor(allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
-        #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #                     '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),follow=False),
+        Rule(LinkExtractor(allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                           '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),callback='parse_enrollment_guide_index',follow=False),
 
         # 更多信息发布
         # Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
@@ -98,7 +99,8 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
             # 可能是研招网的反爬虫措施，用.text获取的文本有一些奇怪的东西
             # 这里用正则表达式整理一下
-            name = re.sub('\r\n                                        ', '', name)
+            name = re.sub(
+                '\r\n                                        ', '', name)
             name = re.sub('\r\n                                    ', '', name)
 
             # 将学校名写item
@@ -142,36 +144,33 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             else:
                 item['isSelfMarkingSchool'] = False
             yield item
-    
 
-        
     def parse_school_info(self, response):
         # self.logger.debug(response.test+" 院校简介")
         soup = BeautifulSoup(response.body, 'lxml')
-        content = soup.find('div',attrs={"class":'container'})
+        content = soup.find('div', attrs={"class": 'container'})
 
-        collegeName = soup.find('div',attrs={'class':'header-wrapper'}).find(
-            'h1',attrs={'class':'zx-yx-title'}).find('a').text
-        
-        collegeName = re.sub('"',"",collegeName)
-        collegeName = re.sub('\ue835',"",collegeName)
+        collegeName = soup.find('div', attrs={'class': 'header-wrapper'}).find(
+            'h1', attrs={'class': 'zx-yx-title'}).find('a').text
 
-        article = content.findAll('div',attrs={'class':'yxk-content'})
+        collegeName = re.sub('"', "", collegeName)
+        collegeName = re.sub('\ue835', "", collegeName)
+
+        article = content.findAll('div', attrs={'class': 'yxk-content'})
 
         _article = []
 
         for i in article:
             _article.append(i.text)
 
-        for i in range(0,3):
-            _article[i] = re.sub('\r','',_article[i])
-            _article[i] = re.sub('\ue835','',_article[i])
-            _article[i] = re.sub('\u3000','',_article[i])
-            _article[i] = re.sub('\xa01','',_article[i])
-            _article[i] = re.sub('\xa0','',_article[i])
-            _article[i] = re.sub('\t','',_article[i])
-            _article[i] = re.sub(' ','',_article[i])
-            
+        for i in range(0, 3):
+            _article[i] = re.sub('\r', '', _article[i])
+            _article[i] = re.sub('\ue835', '', _article[i])
+            _article[i] = re.sub('\u3000', '', _article[i])
+            _article[i] = re.sub('\xa01', '', _article[i])
+            _article[i] = re.sub('\xa0', '', _article[i])
+            _article[i] = re.sub('\t', '', _article[i])
+            _article[i] = re.sub(' ', '', _article[i])
 
         item = collegeInfoItem()
 
@@ -183,28 +182,28 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
         item['surrounding'] = _article[2]
 
-
         yield item
 
-    def parse_school_settings(self, response):
-        # self.logger.debug(response.text+" 院系设置")
-        pass
+    def parse_enrollment_guide_index(self, response):
+        soup = BeautifulSoup(response.body, 'lxml')
 
-    def parse_department_info(self, response):
-        # self.logger.debug(" 专业介绍")
-        pass
-    
-    def parse_adjust_policy(self, response):
-        # self.logger.debug(response.text+" 调剂策略")
-        pass
-    
-    def parse_admission_rules(self, response):
-        # self.logger.debug(response.text+" 录取规则")
-        pass
+        collegeName = soup.find('div', attrs={'class': 'header-wrapper'}).find(
+            'h1', attrs={'class': 'zx-yx-title'}).find('a').text
 
-    def parse_more(self, response):
-        # self.logger.debug(response.text)
-        pass
+        collegeName = re.sub('"', "", collegeName)
+        collegeName = re.sub('\ue835', "", collegeName)
 
-    def parse_school_item(self, response):
-        pass
+        contant = soup.find('div',attrs={'class':'container'})
+        articlesList = contant.find('tbody').findAll('tr')
+
+
+        for article in articlesList:
+            item = enrollmentGuideIndexItem()
+
+            # 解析逻辑
+
+            yield item
+
+
+
+

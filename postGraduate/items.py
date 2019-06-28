@@ -52,6 +52,18 @@ class adjustPolicyItem(scrapy.Item):
     collection = table = 'adjustPolicy'
     adjustPolicy = scrapy.Field()
 
+class enrollmentGuideIndexItem(scrapy.Item):
+    collection = table = 'EnrollmentGuideIndex'
+    collegeName = scrapy.Field()
+    articleNum = scrapy.Field()
+    enrollmentGuideTitle = scrapy.Field()
+    releaseTime = scrapy.Field()
+
+class enrollmentGuideArticleItem(scrapy.Item):
+    collection = table = 'EnrollmentGuideAritcle'
+    title = scrapy.Field()
+    contant = scrapy.Field()
+
 # 考试点Item
 class kaoshidianItem(scrapy.Item):
     collection = table = 'kaoshiwang'
