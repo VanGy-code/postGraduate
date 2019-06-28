@@ -28,8 +28,8 @@ class yanzhaowangIntroItem(scrapy.Item):
 class collegeInfoItem(scrapy.Item):
     collection = table = 'schoolInfo'
     collegeName = scrapy.Field()
-    collegeLeaderInfoUrl = scrapy.Field()
-    collegelIntroUrl = scrapy.Field()
+    collegeLeaderInfo = scrapy.Field()
+    collegelIntro = scrapy.Field()
     surrounding = scrapy.Field()
 
 
