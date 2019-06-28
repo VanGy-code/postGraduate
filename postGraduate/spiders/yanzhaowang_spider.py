@@ -60,14 +60,22 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         # 更多招生简章
         Rule(LinkExtractor(allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
                             restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-                            '//div[contains(@class,"yxk-column-left")]//a[contains(.,"更多")]'),follow=True),
+                            '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),follow=True),
 
         # 更多信息发布
-        Rule(LinkExtractor(allow=r"")),
+        Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
+                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                            '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),follow=True),
 
         # 更多网报公告
+        Rule(LinkExtractor(allow=r"/sswbgg/\?dwdm=\d+\&ssdm=\d+",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                           '//h4[contains(.,"网报公告")]//a[contains(.,"更多")]'),follow=True),
 
         # 更多调剂办法
+        Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                            '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),follow=True),
 
     )
 
@@ -142,24 +150,27 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
         
     def parse_school_info(self, response):
-        self.logger.debug(response.test+" 院校简介")
+        # self.logger.debug(response.test+" 院校简介")
         pass
 
     def parse_school_settings(self, response):
-        self.logger.debug(response.text+" 院系设置")
+        # self.logger.debug(response.text+" 院系设置")
         pass
 
     def parse_department_info(self, response):
-        self.logger.debug(response.text+" 专业介绍")
+        # self.logger.debug(" 专业介绍")
         pass
     
     def parse_adjust_policy(self, response):
-        self.logger.debug(response.text+" 调剂策略")
+        # self.logger.debug(response.text+" 调剂策略")
         pass
     
     def parse_admission_rules(self, response):
-        self.logger.debug(response.text+" 录取规则")
+        # self.logger.debug(response.text+" 录取规则")
         pass
+
+    def parse_more(self, response):
+        self.logger.debug(response.text)
 
     def parse_school_item(self, response):
         pass
