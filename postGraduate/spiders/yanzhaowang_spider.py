@@ -16,26 +16,37 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
     rules = (
         # 院校库
-        Rule(LinkExtractor(allow=r'/sch/',
-                           restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'), follow=True),
+        Rule(LinkExtractor(
+            allow=r'/sch/',
+            restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'),
+             follow=True),
 
         # 专业库
 
         # 院校信息
-        Rule(LinkExtractor(allow=r'sch/schoolInfo--schId-.*\.dhtml',
-                           restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'), follow=True),
+        Rule(LinkExtractor(
+            allow=r'sch/schoolInfo--schId-.*\.dhtml',
+            restrict_xpaths=
+            '//div[@class="yxk-table"]//table[@class="ch-table"]'),
+             follow=True),
 
         # next page(下一页) follow是否跟进链接
-        Rule(LinkExtractor(allow=r'\?start=\d+',
-                           restrict_xpaths='//div[contains(@class,"pager-box")]'
-                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
-             callback='parse_index_url', follow=False),
+        Rule(LinkExtractor(
+            allow=r'\?start=\d+',
+            restrict_xpaths='//div[contains(@class,"pager-box")]'
+            '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'
+        ),
+             callback='parse_index_url',
+             follow=False),
 
         # 院校简介
-        Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-                           '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
-             callback='parse_school_info', follow=True),
+        Rule(LinkExtractor(
+            allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+            restrict_xpaths=
+            '//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
+             callback='parse_school_info',
+             follow=True),
 
         # 院校设置
         # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
@@ -62,9 +73,13 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         #                     callback='parse_adjust_policy',follow=False),
 
         # 更多招生简章
-        Rule(LinkExtractor(allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
-                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-                           '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),callback='parse_enrollment_guide_index',follow=False),
+        Rule(LinkExtractor(
+            allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
+            restrict_xpaths=
+            '//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+            '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
+             callback='parse_enrollment_guide_index',
+             follow=False),
 
         # 更多信息发布
         # Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
@@ -80,7 +95,6 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         # Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
         #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
         #                     '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),follow=False),
-
     )
 
     def parse_index_url(self, response):
@@ -99,8 +113,8 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
             # 可能是研招网的反爬虫措施，用.text获取的文本有一些奇怪的东西
             # 这里用正则表达式整理一下
-            name = re.sub(
-                '\r\n                                        ', '', name)
+            name = re.sub('\r\n                                        ', '',
+                          name)
             name = re.sub('\r\n                                    ', '', name)
 
             # 将学校名写item
@@ -150,8 +164,11 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         soup = BeautifulSoup(response.body, 'lxml')
         content = soup.find('div', attrs={"class": 'container'})
 
-        collegeName = soup.find('div', attrs={'class': 'header-wrapper'}).find(
-            'h1', attrs={'class': 'zx-yx-title'}).find('a').text
+        collegeName = soup.find('div', attrs={
+            'class': 'header-wrapper'
+        }).find('h1', attrs={
+            'class': 'zx-yx-title'
+        }).find('a').text
 
         collegeName = re.sub('"', "", collegeName)
         collegeName = re.sub('\ue835', "", collegeName)
@@ -187,15 +204,17 @@ class YanzhaowangSpiderSpider(CrawlSpider):
     def parse_enrollment_guide_index(self, response):
         soup = BeautifulSoup(response.body, 'lxml')
 
-        collegeName = soup.find('div', attrs={'class': 'header-wrapper'}).find(
-            'h1', attrs={'class': 'zx-yx-title'}).find('a').text
+        collegeName = soup.find('div', attrs={
+            'class': 'header-wrapper'
+        }).find('h1', attrs={
+            'class': 'zx-yx-title'
+        }).find('a').text
 
         collegeName = re.sub('"', "", collegeName)
         collegeName = re.sub('\ue835', "", collegeName)
 
-        contant = soup.find('div',attrs={'class':'container'})
+        contant = soup.find('div', attrs={'class': 'container'})
         articlesList = contant.find('tbody').findAll('tr')
-
 
         for article in articlesList:
             item = enrollmentGuideIndexItem()
@@ -203,7 +222,3 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             # 解析逻辑
 
             yield item
-
-
-
-
