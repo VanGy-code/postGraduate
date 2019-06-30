@@ -62,7 +62,7 @@ class enrollmentGuideIndexItem(scrapy.Item):
 class enrollmentGuideArticleItem(scrapy.Item):
     collection = table = 'EnrollmentGuideAritcle'
     title = scrapy.Field()
-    contant = scrapy.Field()
+    mainBody = scrapy.Field()
 
 # 考试点Item
 class kaoshidianItem(scrapy.Item):

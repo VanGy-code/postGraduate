@@ -19,16 +19,15 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         Rule(LinkExtractor(
             allow=r'/sch/',
             restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'),
-             follow=True),
+            follow=True),
 
         # 专业库
 
         # 院校信息
         Rule(LinkExtractor(
             allow=r'sch/schoolInfo--schId-.*\.dhtml',
-            restrict_xpaths=
-            '//div[@class="yxk-table"]//table[@class="ch-table"]'),
-             follow=True),
+            restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'),
+            follow=True),
 
         # next page(下一页) follow是否跟进链接
         Rule(LinkExtractor(
@@ -36,17 +35,16 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             restrict_xpaths='//div[contains(@class,"pager-box")]'
             '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'
         ),
-             callback='parse_index_url',
-             follow=False),
+            callback='parse_index_url',
+            follow=False),
 
         # 院校简介
         Rule(LinkExtractor(
             allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-            restrict_xpaths=
-            '//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
             '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
-             callback='parse_school_info',
-             follow=True),
+            callback='parse_school_info',
+            follow=False),
 
         # 院校设置
         # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
@@ -75,11 +73,15 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         # 更多招生简章
         Rule(LinkExtractor(
             allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
-            restrict_xpaths=
-            '//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
             '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
-             callback='parse_enrollment_guide_index',
-             follow=False),
+            callback='parse_enrollment_guide_index',
+            follow=True),
+        Rule(LinkExtractor(
+            allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@table,"ch-table marginb")]'),
+            callback='',
+            follow=True),
 
         # 更多信息发布
         # Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
@@ -165,10 +167,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         content = soup.find('div', attrs={"class": 'container'})
 
         collegeName = soup.find('div', attrs={
-            'class': 'header-wrapper'
-        }).find('h1', attrs={
-            'class': 'zx-yx-title'
-        }).find('a').text
+                                'class': 'header-wrapper'}).find('h1', attrs={'class': 'zx-yx-title'}).find('a').text
 
         collegeName = re.sub('"', "", collegeName)
         collegeName = re.sub('\ue835', "", collegeName)
@@ -205,10 +204,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         soup = BeautifulSoup(response.body, 'lxml')
 
         collegeName = soup.find('div', attrs={
-            'class': 'header-wrapper'
-        }).find('h1', attrs={
-            'class': 'zx-yx-title'
-        }).find('a').text
+                                'class': 'header-wrapper'}).find('h1', attrs={'class': 'zx-yx-title'}).find('a').text
 
         collegeName = re.sub('"', "", collegeName)
         collegeName = re.sub('\ue835', "", collegeName)
@@ -219,6 +215,29 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         for article in articlesList:
             item = enrollmentGuideIndexItem()
 
-            # 解析逻辑
+            item['articleNum'] = article.findAll('td')[0].text
+            item['enrollmentGuideTitle'] = article.findAll('td')[1].text
+            item['releaseTime'] = article.findAll('td')[2].text
 
             yield item
+
+    def parse_enrollment_guide_article(self, response):
+        soup = BeautifulSoup(response.body, 'lxml')
+        collegeName = soup.find('div', attrs={
+                                'class': 'header-wrapper'}).find('h1', attrs={'class': 'zx-yx-title'}).find('a').text
+        collegeName = re.sub('"', "", collegeName)
+        collegeName = re.sub('\ue835', "", collegeName)
+
+        contant = soup.find('div', attrs={'class': 'container'})
+
+        title = contant.find('div', attrs={'class': 'yxk-big-title'}).text
+        mainBody = contant.find('div', attrs={'class': 'yxk-news-contain'}).text
+
+        item = enrollmentGuideArticleItem()
+
+        item['title'] = title
+        item['mainBody'] = mainBody
+
+        yield item
+
+        
