@@ -80,7 +80,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         Rule(LinkExtractor(
             allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
             restrict_xpaths='//div[contains(@class,"container")]//div[contains(@table,"ch-table marginb")]'),
-            callback='',
+            callback='parse_enrollment_guide_article',
             follow=True),
 
         # 更多信息发布
@@ -215,9 +215,21 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         for article in articlesList:
             item = enrollmentGuideIndexItem()
 
-            item['articleNum'] = article.findAll('td')[0].text
-            item['enrollmentGuideTitle'] = article.findAll('td')[1].text
-            item['releaseTime'] = article.findAll('td')[2].text
+            articleNum = article.findAll('td')[0].text
+            articleNum = re.sub(' ','',articleNum)
+            articleNum = re.sub('\n', '', articleNum)
+
+            enrollmentGuideTitle = article.findAll('td')[1].text
+            enrollmentGuideTitle = re.sub('\n', '', enrollmentGuideTitle)
+            enrollmentGuideTitle = re.sub(' ', '', enrollmentGuideTitle)
+
+            releaseTime = article.findAll('td')[2].text
+            releaseTime = re.sub('\n', '', releaseTime)
+            releaseTime = re.sub(' ', '', releaseTime)
+
+            item['articleNum'] = articleNum
+            item['enrollmentGuideTitle'] = enrollmentGuideTitle
+            item['releaseTime'] = releaseTime
 
             yield item
 
