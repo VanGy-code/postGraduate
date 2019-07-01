@@ -1,12 +1,26 @@
+
 # Scrapy for information of postgraduate college
 
+![](https://img.shields.io/badge/language-Python-blue.svg) ![](https://img.shields.io/badge/platform-ios|Linux|Windows-lightgrey.svg) [![codebeat badge](https://codebeat.co/badges/f56ff221-9a8f-4bc2-bfa3-6885ea07bf4f)](https://codebeat.co/projects/github-com-colordoge-postgraduate-master) ![GitHub repo size](https://img.shields.io/github/repo-size/ColorDoge/postGraduate.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Scrapy.svg)
 
-[![](http://img.shields.io/travis/ColorDoge/postGraduate.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Python.svg?color=%230abde3)]()
-------
+<!-- TOC -->
 
-[TOC]
+- [Scrapy for information of postgraduate college](#scrapy-for-information-of-postgraduate-college)
+    - [一、项目目标](#一项目目标)
+    - [二、编译环境](#二编译环境)
+    - [三、使用技术介绍](#三使用技术介绍)
+    - [四、爬取思路](#四爬取思路)
+    - [五、爬取分析](#五爬取分析)
+    - [六、项目进度](#六项目进度)
+        - [&emsp;（一）新建项目](#emsp一新建项目)
+        - [&emsp;（二）定义 Rule（获取链接的规则）](#emsp二定义-rule获取链接的规则)
+        - [&emsp;（三）解析页面（数据提取）](#emsp三解析页面数据提取)
+        - [&emsp;（四）数据清洗](#emsp四数据清洗)
+        - [&emsp;（五）通用配置抽取](#emsp五通用配置抽取)
+        - [&emsp;（六）数据存储](#emsp六数据存储)
+    - [七、使用说明](#七使用说明)
 
-------
+<!-- /TOC -->
 
 ## 一、项目目标
 
