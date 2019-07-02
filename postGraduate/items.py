@@ -64,6 +64,12 @@ class enrollmentGuideArticleItem(scrapy.Item):
     title = scrapy.Field()
     mainBody = scrapy.Field()
 
+class onlineRegistrationAnnouncementIndexItem(scrapy.Item):
+    collection = table = 'onlineRegistrationAnnouncementIndex'
+    title = scrapy.Field()
+    releaseTime = scrapy.Field()
+
+
 # 考试点Item
 class kaoshidianItem(scrapy.Item):
     collection = table = 'kaoshiwang'

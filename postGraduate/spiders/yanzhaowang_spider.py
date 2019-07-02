@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+import re
+
+import lxml
 import scrapy
+from bs4 import BeautifulSoup
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from postGraduate.items import yanzhaowangIntroItem, collegeInfoItem, enrollmentGuideIndexItem, enrollmentGuideArticleItem
-from bs4 import BeautifulSoup
-import lxml
-import re
+
+from postGraduate.items import (collegeInfoItem, enrollmentGuideArticleItem,
+                                enrollmentGuideIndexItem, yanzhaowangIntroItem)
 
 
 class YanzhaowangSpiderSpider(CrawlSpider):
@@ -30,21 +33,17 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             follow=True),
 
         # next page(下一页) follow是否跟进链接
-        Rule(LinkExtractor(
-            allow=r'\?start=\d+',
-            restrict_xpaths='//div[contains(@class,"pager-box")]'
-            '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'
-        ),
-            callback='parse_index_url',
-            follow=False),
+        Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
+                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
+             callback='parse_index_url', follow=False),
 
-        # 院校简介
-        Rule(LinkExtractor(
-            allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
-            callback='parse_school_info',
-            follow=False),
+        # # 院校简介
+        # Rule(LinkExtractor(
+        #     allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+        #     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
+        #     callback='parse_school_info',
+        #     follow=False),
 
         # 院校设置
         # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
@@ -70,33 +69,39 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"调剂政策")]'),
         #                     callback='parse_adjust_policy',follow=False),
 
-        # 更多招生简章
-        Rule(LinkExtractor(
-            allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
-            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-            '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
-            callback='parse_enrollment_guide_index',
-            follow=True),
-        Rule(LinkExtractor(
-            allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
-            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@table,"ch-table marginb")]'),
-            callback='parse_enrollment_guide_article',
-            follow=True),
+        # # 更多招生简章
+        # Rule(LinkExtractor(
+        #     allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
+        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+        #     '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
+        #     callback='parse_enrollment_guide_index',
+        #     follow=True),
+
+        # # 招生简章详情
+        # Rule(LinkExtractor(
+        #     allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@table,"ch-table marginb")]'),
+        #     callback='parse_enrollment_guide_article',
+        #     follow=True),
 
         # 更多信息发布
-        # Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
-        #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #                     '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),follow=False),
+        Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
+                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                            '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),follow=False),
 
-        # 更多网报公告
-        # Rule(LinkExtractor(allow=r"/sswbgg/\?dwdm=\d+\&ssdm=\d+",
-        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #                    '//h4[contains(.,"网报公告")]//a[contains(.,"更多")]'),follow=False),
+        # 网报公告
+        Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                           '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement_index",follow=True,),
 
         # 更多调剂办法
-        # Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
-        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #                     '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),follow=False),
+        Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                            '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),follow=False),
+
+        # 调剂办法详情
+        Rule(LinkExtractor(
+            allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",restrict_xpaths=''),follow=False),
     )
 
     def parse_index_url(self, response):
@@ -216,7 +221,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             item = enrollmentGuideIndexItem()
 
             articleNum = article.findAll('td')[0].text
-            articleNum = re.sub(' ','',articleNum)
+            articleNum = re.sub(' ', '', articleNum)
             articleNum = re.sub('\n', '', articleNum)
 
             enrollmentGuideTitle = article.findAll('td')[1].text
@@ -243,7 +248,8 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         contant = soup.find('div', attrs={'class': 'container'})
 
         title = contant.find('div', attrs={'class': 'yxk-big-title'}).text
-        mainBody = contant.find('div', attrs={'class': 'yxk-news-contain'}).text
+        mainBody = contant.find(
+            'div', attrs={'class': 'yxk-news-contain'}).text
 
         item = enrollmentGuideArticleItem()
 
@@ -252,4 +258,8 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
         yield item
 
-        
+    def parse_online_registration_announcement_index(self, response):
+
+        pass
+
+    # def parse_
