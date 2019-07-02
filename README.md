@@ -1,5 +1,5 @@
 
-# Scrapy for information of postgraduate college
+# Scrapy for information of postgraduate college(Scrapy通用爬虫爬取国内考研资讯)
 
 ![](https://img.shields.io/badge/language-Python-blue.svg) ![](https://img.shields.io/badge/platform-ios|Linux|Windows-lightgrey.svg) [![codebeat badge](https://codebeat.co/badges/f56ff221-9a8f-4bc2-bfa3-6885ea07bf4f)](https://codebeat.co/projects/github-com-colordoge-postgraduate-master) ![GitHub repo size](https://img.shields.io/github/repo-size/ColorDoge/postGraduate.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Scrapy.svg)
 
