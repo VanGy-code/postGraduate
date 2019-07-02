@@ -7,8 +7,11 @@ from bs4 import BeautifulSoup
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
-from postGraduate.items import (collegeInfoItem, enrollmentGuideArticleItem,
-                                enrollmentGuideIndexItem, yanzhaowangIntroItem)
+from postGraduate.items import (adjustMethodIndexItem, adjustMethodItem,
+                                collegeInfoItem, enrollmentGuideIndexItem,
+                                enrollmentGuideItem,
+                                onlineRegistrationAnnouncementItem,
+                                yanzhaowangIntroItem)
 
 
 class YanzhaowangSpiderSpider(CrawlSpider):
@@ -26,6 +29,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
         # 专业库
 
+
         # 院校信息
         Rule(LinkExtractor(
             allow=r'sch/schoolInfo--schId-.*\.dhtml',
@@ -38,14 +42,14 @@ class YanzhaowangSpiderSpider(CrawlSpider):
              callback='parse_index_url', follow=False),
 
         # # 院校简介
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-        #     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
-        #     callback='parse_school_info',
-        #     follow=False),
+        Rule(LinkExtractor(
+            allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
+            callback='parse_school_info',
+            follow=False),
 
-        # 院校设置
+        # # 院校设置
         # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
         #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
         #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校设置")]'),
@@ -58,50 +62,58 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         #                     callback='parse_specialty_info',follow=False
         #                     ),
 
-        # 录取规则
+        # # 录取规则
         # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
         #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
         #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"录取规则")]'),
         #                     callback='parse_admission_rules',follow=False),
 
-        # 调剂政策
+        # # 调剂政策
         # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
         #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"调剂政策")]'),
         #                     callback='parse_adjust_policy',follow=False),
 
-        # # 更多招生简章
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #     '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
-        #     callback='parse_enrollment_guide_index',
-        #     follow=True),
+        # 更多招生简章
+        Rule(LinkExtractor(
+            allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+            '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
+            callback='parse_enrollment_guide_index',
+            follow=True),
 
-        # # 招生简章详情
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@table,"ch-table marginb")]'),
-        #     callback='parse_enrollment_guide_article',
-        #     follow=True),
+        # 招生简章详情
+        Rule(LinkExtractor(
+            allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//table'),
+            callback='parse_enrollment_guide',
+            follow=True),
 
         # 更多信息发布
         Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
-                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-                            '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),follow=False),
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                           '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),
+                           follow=False),
 
         # 网报公告
         Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-                           '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement_index",follow=True,),
+                           '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement",
+             follow=True,),
 
         # 更多调剂办法
         Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-                            '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),follow=False),
+                           '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'), 
+                           callback='parse_adjust_method_index',follow=False),
 
         # 调剂办法详情
         Rule(LinkExtractor(
-            allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",restrict_xpaths=''),follow=False),
+            allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//table'),
+            callback='parse_adjust_method',
+            follow=False),
+
+        
     )
 
     def parse_index_url(self, response):
@@ -217,49 +229,122 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         contant = soup.find('div', attrs={'class': 'container'})
         articlesList = contant.find('tbody').findAll('tr')
 
-        for article in articlesList:
-            item = enrollmentGuideIndexItem()
+        if len(articlesList)>0 :
+            for article in articlesList:
+                item = enrollmentGuideIndexItem()
 
-            articleNum = article.findAll('td')[0].text
-            articleNum = re.sub(' ', '', articleNum)
-            articleNum = re.sub('\n', '', articleNum)
+                articleNum = article.findAll('td')[0].text
+                articleNum = re.sub(' ', '', articleNum)
+                articleNum = re.sub('\n', '', articleNum)
 
-            enrollmentGuideTitle = article.findAll('td')[1].text
-            enrollmentGuideTitle = re.sub('\n', '', enrollmentGuideTitle)
-            enrollmentGuideTitle = re.sub(' ', '', enrollmentGuideTitle)
+                enrollmentGuideTitle = article.findAll('td')[1].text
+                enrollmentGuideTitle = re.sub('\n', '', enrollmentGuideTitle)
+                enrollmentGuideTitle = re.sub(' ', '', enrollmentGuideTitle)
 
-            releaseTime = article.findAll('td')[2].text
-            releaseTime = re.sub('\n', '', releaseTime)
-            releaseTime = re.sub(' ', '', releaseTime)
+                releaseTime = article.findAll('td')[2].text
+                releaseTime = re.sub('\n', '', releaseTime)
+                releaseTime = re.sub(' ', '', releaseTime)
 
-            item['articleNum'] = articleNum
-            item['enrollmentGuideTitle'] = enrollmentGuideTitle
-            item['releaseTime'] = releaseTime
+                item['articleNum'] = articleNum
+                item['enrollmentGuideTitle'] = enrollmentGuideTitle
+                item['releaseTime'] = releaseTime
 
-            yield item
+                yield item
 
-    def parse_enrollment_guide_article(self, response):
+    def parse_enrollment_guide(self, response):
         soup = BeautifulSoup(response.body, 'lxml')
         collegeName = soup.find('div', attrs={
                                 'class': 'header-wrapper'}).find('h1', attrs={'class': 'zx-yx-title'}).find('a').text
         collegeName = re.sub('"', "", collegeName)
         collegeName = re.sub('\ue835', "", collegeName)
 
-        contant = soup.find('div', attrs={'class': 'container'})
+        content = soup.find('div', attrs={'class': 'container'})
 
-        title = contant.find('div', attrs={'class': 'yxk-big-title'}).text
-        mainBody = contant.find(
+        title = content.find('h2', attrs={'class': 'yxk-big-title'}).text
+        mainBody = content.find(
             'div', attrs={'class': 'yxk-news-contain'}).text
 
-        item = enrollmentGuideArticleItem()
-
+        item = enrollmentGuideItem()
+        item['collegeName'] = collegeName
         item['title'] = title
         item['mainBody'] = mainBody
 
         yield item
 
-    def parse_online_registration_announcement_index(self, response):
+    def parse_online_registration_announcement(self, response):
+        soup = BeautifulSoup(response.body, 'lxml')
+        item = onlineRegistrationAnnouncementItem()
 
-        pass
+        container = soup.find('div', attrs={'class': 'container'})
+        titleArea = container.find('div', attrs={'class': 'article-title-box'})
+        articleTitle = titleArea.find('div', attrs={'class': 'article-title'}).text
 
-    # def parse_
+        articleFrom = titleArea.find('div', attrs={'class': 'article-from'}).find('span').text
+        collegeName = re.findall(r"招生单位 \[(.+?)\]", articleFrom)
+
+        mainBody = container.find('div',attrs={'class':'article-wrap'}).find('article').text
+
+        mainBody = re.sub('<br>', '\n', mainBody)
+        
+        item['collegeName'] = collegeName
+        item['title'] = articleTitle
+        item['mainBody'] = mainBody
+
+        yield item
+
+    def parse_adjust_method_index(self, response):
+        soup = BeautifulSoup(response.body, 'lxml')
+
+        content = soup.find('div', attrs={"class": 'container'})
+
+        collegeName = soup.find('div', attrs={
+                                'class': 'header-wrapper'}).find('h1', attrs={'class': 'zx-yx-title'}).find('a').text
+
+        collegeName = re.sub('"', "", collegeName)
+        collegeName = re.sub('\ue835', "", collegeName)
+
+        announcements = content.find('tbody').findAll('tr')
+
+        if len(announcements)>0 :
+            for announcement in announcements:
+                item = adjustMethodIndexItem()
+
+                announcementNum = announcement.findAll('td')[0].text
+                announcementNum = re.sub(' ', '', announcementNum)
+                announcementNum = re.sub('\n', '', announcementNum)
+
+                announcementTitle = announcement.findAll('td')[1].text
+                announcementTitle = re.sub('\n', '', announcementTitle)
+                announcementTitle = re.sub(' ', '', announcementTitle)
+
+                releaseTime = announcement.findAll('td')[2].text
+                releaseTime = re.sub('\n', '', releaseTime)
+                releaseTime = re.sub(' ', '', releaseTime)
+
+                item['num'] = announcementNum
+                item['title'] = announcementTitle
+                item['releaseTime'] = releaseTime
+
+                yield item
+
+    def parse_adjust_method(self, response):
+        soup = BeautifulSoup(response.body, 'lxml')
+        collegeName = soup.find('div', attrs={
+                                 'class': 'header-wrapper'}).find('h1', attrs={'class': 'zx-yx-title'}).find('a').text
+        collegeName = re.sub('"', "", collegeName)
+        collegeName = re.sub('\ue835', "", collegeName)
+
+        content = soup.find('div', attrs={'class': 'container'})
+
+        title = content.find('h2', attrs={'class': 'yxk-big-title'}).text
+        mainBody = content.find(
+            'div', attrs={'class': 'yxk-news-contain'}).text
+
+        mainBody = re.sub('\xa0','',mainBody)
+
+        item = adjustMethodItem()
+        item['collegeName'] = collegeName
+        item['title'] = title
+        item['mainBody'] = mainBody
+
+        yield item

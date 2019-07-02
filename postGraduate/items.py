@@ -59,15 +59,32 @@ class enrollmentGuideIndexItem(scrapy.Item):
     enrollmentGuideTitle = scrapy.Field()
     releaseTime = scrapy.Field()
 
-class enrollmentGuideArticleItem(scrapy.Item):
+class enrollmentGuideItem(scrapy.Item):
     collection = table = 'EnrollmentGuideAritcle'
+    collegeName = scrapy.Field()
     title = scrapy.Field()
     mainBody = scrapy.Field()
 
-class onlineRegistrationAnnouncementIndexItem(scrapy.Item):
-    collection = table = 'onlineRegistrationAnnouncementIndex'
+class onlineRegistrationAnnouncementItem(scrapy.Item):
+    collection = table = 'onlineRegistrationAnnouncement'
+    collegeName = scrapy.Field()
+    title = scrapy.Field()
+    mainBody = scrapy.Field()
+
+
+class adjustMethodIndexItem(scrapy.Item):
+    collection = table = 'adjustMethodIndex'
+    collegeName = scrapy.Field()
+    num = scrapy.Field()
     title = scrapy.Field()
     releaseTime = scrapy.Field()
+
+
+class adjustMethodItem(scrapy.Item):
+    collection = table = 'adjustMethod'
+    collegeName = scrapy.Field()
+    title = scrapy.Field()
+    mainBody = scrapy.Field()
 
 
 # 考试点Item
