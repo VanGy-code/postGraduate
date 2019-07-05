@@ -118,7 +118,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
                            '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),
-             follow=FalTruese),
+             follow=True),
 
         # 网报公告
         Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
