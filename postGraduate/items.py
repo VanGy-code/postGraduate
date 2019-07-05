@@ -86,6 +86,29 @@ class adjustMethodItem(scrapy.Item):
     title = scrapy.Field()
     mainBody = scrapy.Field()
 
+class degreeItem(scrapy.Item):
+    collection = table = 'degreeLevel'
+    id = scrapy.Field()
+    name = scrapy.Field()
+
+class fieldItem(scrapy.Item):
+    collection = table = 'field'
+    id = scrapy.Field()
+    name = scrapy.Field()
+
+
+class subjectItem(scrapy.Item):
+    collection = table = 'subject'
+    id = scrapy.Field()
+    name = scrapy.Field()
+
+
+class majorItem(scrapy.Item):
+    collection = table = 'subject'
+    id = scrapy.Field()
+    name = scrapy.Field()
+
+
 
 # 考试点Item
 class kaoshidianItem(scrapy.Item):

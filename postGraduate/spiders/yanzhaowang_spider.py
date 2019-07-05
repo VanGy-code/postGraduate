@@ -4,14 +4,34 @@ import re
 import lxml
 import scrapy
 from bs4 import BeautifulSoup
+from scrapy import FormRequest, Selector
+from scrapy.http import HtmlResponse
 from scrapy.linkextractors import LinkExtractor
+from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
+from scrapy_splash import (SplashFormRequest, SplashJsonResponse,
+                           SplashRequest, SplashResponse, SplashTextResponse)
 
 from postGraduate.items import (adjustMethodIndexItem, adjustMethodItem,
-                                collegeInfoItem, enrollmentGuideIndexItem,
-                                enrollmentGuideItem,
+                                collegeInfoItem, degreeItem,
+                                enrollmentGuideIndexItem, enrollmentGuideItem,
+                                fieldItem, majorItem,
                                 onlineRegistrationAnnouncementItem,
-                                yanzhaowangIntroItem)
+                                subjectItem, yanzhaowangIntroItem)
+
+"""
+定义Lua脚本
+"""
+script = """
+function main(splash, args)
+    splash.images_enabled = false
+    assert(splash:go(args.url))
+    assert(splash:wait(0.5))
+    return {
+        html = splash:html()
+    }
+end
+"""
 
 
 class YanzhaowangSpiderSpider(CrawlSpider):
@@ -19,6 +39,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
     allowed_domains = ['yz.chsi.com.cn']
     start_urls = ['https://yz.chsi.com.cn']
     base_url = 'https://yz.chsi.com.cn/'
+    base_major_url = 'https://yz.chsi.com.cn/zyk/specialityCategory.do'
 
     rules = (
         # 院校库
@@ -28,7 +49,12 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             follow=True),
 
         # 专业库
-
+        Rule(LinkExtractor(
+            allow=r"/zyk",
+            restrict_xpaths='//ul[contains(@class,"nav-td")]'),
+            process_request='splash_request',
+            callback='parse_degree',
+            follow=True),
 
         # 院校信息
         Rule(LinkExtractor(
@@ -39,7 +65,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         # next page(下一页) follow是否跟进链接
         Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
                            '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
-             callback='parse_index_url', follow=False),
+             callback='parse_index_url', follow=True),
 
         # # 院校简介
         Rule(LinkExtractor(
@@ -47,7 +73,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
             '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
             callback='parse_school_info',
-            follow=False),
+            follow=True),
 
         # # 院校设置
         # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
@@ -92,29 +118,79 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
                            '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),
-                           follow=False),
+             follow=FalTruese),
 
         # 网报公告
         Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
                            '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement",
-             follow=True,),
+             follow=True),
 
         # 更多调剂办法
         Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
                            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-                           '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'), 
-                           callback='parse_adjust_method_index',follow=False),
+                           '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),
+             callback='parse_adjust_method_index', follow=True),
 
         # 调剂办法详情
         Rule(LinkExtractor(
             allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
             restrict_xpaths='//div[contains(@class,"container")]//table'),
             callback='parse_adjust_method',
-            follow=False),
+            follow=True),
 
-        
+
     )
+
+    """
+    重写父类，包装SplashRequest
+    """
+
+    def splash_request(self, request):
+        """
+          process_request is a callable, or a string (in which case a method from the spider object with that name will
+        be used) which will be called with every request extracted by this rule,
+        and must return a request or None (to filter out the request).
+        :param request:
+        :return: SplashRequest
+        """
+        return SplashRequest(url=request.url, callback=self.parse_degree, args={'wait': 1})
+
+    # 重写CrawlSpider 的方法
+    def _requests_to_follow(self, response):
+        """
+        splash 返回的类型 有这几种SplashTextResponse, SplashJsonResponse, SplashResponse以及scrapy的默认返回类型HtmlResponse
+        所以我们这里只需要检测这几种类型即可，相当于扩充了源码的检测类型
+        :param response:
+        :return:
+        """
+        # print(type(response)) # <class 'scrapy_splash.response.SplashTextResponse'>
+        if not isinstance(response, (SplashTextResponse, SplashJsonResponse, SplashResponse, HtmlResponse)):
+            return
+        print('==========================进入_requests_to_follow=========================')
+        seen = set()
+
+        for n, rule in enumerate(self._rules):
+            links = [lnk for lnk in rule.link_extractor.extract_links(response)
+                     if lnk not in seen]
+            if links and rule.process_links:
+                links = rule.process_links(links)
+            for link in links:
+                seen.add(link)
+                r = self._build_request(n, link)
+                yield rule.process_request(r)
+
+    def _build_request(self, rule, link):
+        # 重要！！！！！这里重写父类方法，特别注意，需要传递meta={'rule': rule, 'link_text': link.text}
+        # 详细可以查看 CrawlSpider 的源码
+        r = SplashRequest(url=link.url, callback=self._response_downloaded, meta={'rule': rule, 'link_text': link.text},
+                          args={'wait': 5, 'url': link.url, 'lua_source': script})
+        r.meta.update(rule=rule, link_text=link.text)
+        return r
+
+    """
+    院校库信息提取方法
+    """
 
     def parse_index_url(self, response):
 
@@ -229,7 +305,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         contant = soup.find('div', attrs={'class': 'container'})
         articlesList = contant.find('tbody').findAll('tr')
 
-        if len(articlesList)>0 :
+        if len(articlesList) > 0:
             for article in articlesList:
                 item = enrollmentGuideIndexItem()
 
@@ -277,15 +353,18 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
         container = soup.find('div', attrs={'class': 'container'})
         titleArea = container.find('div', attrs={'class': 'article-title-box'})
-        articleTitle = titleArea.find('div', attrs={'class': 'article-title'}).text
+        articleTitle = titleArea.find(
+            'div', attrs={'class': 'article-title'}).text
 
-        articleFrom = titleArea.find('div', attrs={'class': 'article-from'}).find('span').text
+        articleFrom = titleArea.find(
+            'div', attrs={'class': 'article-from'}).find('span').text
         collegeName = re.findall(r"招生单位 \[(.+?)\]", articleFrom)
 
-        mainBody = container.find('div',attrs={'class':'article-wrap'}).find('article').text
+        mainBody = container.find(
+            'div', attrs={'class': 'article-wrap'}).find('article').text
 
         mainBody = re.sub('<br>', '\n', mainBody)
-        
+
         item['collegeName'] = collegeName
         item['title'] = articleTitle
         item['mainBody'] = mainBody
@@ -305,7 +384,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
         announcements = content.find('tbody').findAll('tr')
 
-        if len(announcements)>0 :
+        if len(announcements) > 0:
             for announcement in announcements:
                 item = adjustMethodIndexItem()
 
@@ -330,7 +409,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
     def parse_adjust_method(self, response):
         soup = BeautifulSoup(response.body, 'lxml')
         collegeName = soup.find('div', attrs={
-                                 'class': 'header-wrapper'}).find('h1', attrs={'class': 'zx-yx-title'}).find('a').text
+            'class': 'header-wrapper'}).find('h1', attrs={'class': 'zx-yx-title'}).find('a').text
         collegeName = re.sub('"', "", collegeName)
         collegeName = re.sub('\ue835', "", collegeName)
 
@@ -340,7 +419,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         mainBody = content.find(
             'div', attrs={'class': 'yxk-news-contain'}).text
 
-        mainBody = re.sub('\xa0','',mainBody)
+        mainBody = re.sub('\xa0', '', mainBody)
 
         item = adjustMethodItem()
         item['collegeName'] = collegeName
@@ -348,3 +427,100 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         item['mainBody'] = mainBody
 
         yield item
+
+    """
+    专业库信息提取方法
+    """
+
+    def parse_degree(self, response):
+
+        soup = BeautifulSoup(response.body, 'lxml')
+        container = soup.find('div', attrs={'class': 'zyk-list'})
+
+        degreeContainer = container.find('ul', attrs={'class': 'zyk-cc-ul'})
+        degreeList = degreeContainer.findAll('li')
+
+        for degree in degreeList:
+            item = degreeItem()
+
+            degreeId = int(degree.attrs['id'])
+            degreeName = degree.text
+            degreeName = re.sub('\ue6a2', '', degreeName)
+
+            item['id'] = degreeId
+            item['name'] = degreeName
+            yield item
+
+        for degree in degreeList:
+            degreeId = degree.attrs['id']
+            # self.logger.debug(degreeId)
+            yield SplashFormRequest(self.base_major_url,
+                                    formdata={'method': 'subCategoryMl',
+                                              'key': degreeId},
+                                    callback=self.parse_field
+                                    )
+
+    def parse_field(self, response):
+
+        selector = Selector(text=response.body)
+        fieldList = selector.xpath('//li')
+
+        for field in fieldList:
+
+            item = fieldItem()
+
+            fieldId = int(field.xpath('@id').extract()[0])
+            fieldName = field.xpath('./text()').extract()[0]
+            fieldName = re.sub('\ue6a2', '', fieldName)
+
+            item['id'] = fieldId
+            item['name'] = fieldName
+            yield item
+
+        for field in fieldList:
+            fieldId = field.xpath('@id').extract()[0]
+            # self.logger.debug(degreeId)
+            yield SplashFormRequest(self.base_major_url,
+                                    formdata={'method': 'subCategoryMl',
+                                              'key': fieldId},
+                                    callback=self.parse_subject
+                                    )
+
+    def parse_subject(self, response):
+
+        selector = Selector(text=response.body)
+        subjectList = selector.xpath('//li')
+
+        for subject in subjectList:
+            item = subjectItem()
+
+            subjectId = int(subject.xpath('@id').extract()[0])
+            subjectName = subject.xpath('./text()').extract()[0]
+            subjectName = re.sub('\ue6a2', '', subjectName)
+
+            item['id'] = subjectId
+            item['name'] = subjectName
+            yield item
+
+        for subject in subjectList:
+            subjectId = subject.xpath('@id').extract()[0]
+            yield SplashFormRequest(self.base_major_url,
+                                    formdata={'method': 'subCategoryXk',
+                                              'key': subjectId},
+                                    callback=self.parse_major
+                                    )
+
+    def parse_major(self, response):
+        selector = Selector(text=response.body)
+        majorList = selector.xpath('//li')
+
+        for major in majorList:
+            item = majorItem()
+
+            majorId = int(major.xpath('@id').extract()[0])
+            majorName = major.xpath('./text()').extract()[0]
+            majorName = re.sub('\ue6a2', '', majorName)
+
+            item['id'] = majorId
+            item['name'] = majorName
+            yield item
