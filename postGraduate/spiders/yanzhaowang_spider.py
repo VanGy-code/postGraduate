@@ -48,14 +48,6 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'),
             follow=True),
 
-        # 专业库
-        Rule(LinkExtractor(
-            allow=r"/zyk",
-            restrict_xpaths='//ul[contains(@class,"nav-td")]'),
-            process_request='splash_request',
-            callback='parse_degree',
-            follow=True),
-
         # 院校信息
         Rule(LinkExtractor(
             allow=r'sch/schoolInfo--schId-.*\.dhtml',
@@ -74,30 +66,6 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
             callback='parse_school_info',
             follow=True),
-
-        # # 院校设置
-        # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-        #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校设置")]'),
-        #                     callback='parse_school_settings',follow=False),
-
-        # # 专业介绍
-        # Rule(LinkExtractor(allow=r"/sch/listYzZyjs--schId-\d+\,categoryId-\d+\.dhtml",
-        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-        #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"专业介绍")]'),
-        #                     callback='parse_specialty_info',follow=False
-        #                     ),
-
-        # # 录取规则
-        # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-        #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"录取规则")]'),
-        #                     callback='parse_admission_rules',follow=False),
-
-        # # 调剂政策
-        # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"调剂政策")]'),
-        #                     callback='parse_adjust_policy',follow=False),
 
         # 更多招生简章
         Rule(LinkExtractor(
@@ -139,6 +107,21 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             callback='parse_adjust_method',
             follow=True),
 
+
+        # 专业库
+        Rule(LinkExtractor(
+            allow=r"/zyk",
+            restrict_xpaths='//ul[contains(@class,"nav-td")]'),
+            process_request='splash_request',
+            callback='parse_degree',
+            follow=True),
+
+        # 专业主页
+        Rule(LinkExtractor(
+            allow=r"/zyk/specialityDetail.do\?zymc=\.*\&zydm=\d+\&cckey=\d+\&ssdm=&method=distribution",
+                restrict_xpaths='//tr'),
+            callback='parse_test',
+            follow=True),
 
     )
 
@@ -443,7 +426,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         for degree in degreeList:
             item = degreeItem()
 
-            degreeId = int(degree.attrs['id'])
+            degreeId = degree.attrs['id']
             degreeName = degree.text
             degreeName = re.sub('\ue6a2', '', degreeName)
 
@@ -469,7 +452,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
             item = fieldItem()
 
-            fieldId = int(field.xpath('@id').extract()[0])
+            fieldId = field.xpath('@id').extract()[0]
             fieldName = field.xpath('./text()').extract()[0]
             fieldName = re.sub('\ue6a2', '', fieldName)
 
@@ -494,7 +477,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         for subject in subjectList:
             item = subjectItem()
 
-            subjectId = int(subject.xpath('@id').extract()[0])
+            subjectId = subject.xpath('@id').extract()[0]
             subjectName = subject.xpath('./text()').extract()[0]
             subjectName = re.sub('\ue6a2', '', subjectName)
 
@@ -512,15 +495,28 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
     def parse_major(self, response):
         selector = Selector(text=response.body)
-        majorList = selector.xpath('//li')
+        majorList = selector.xpath('//tr')
+
+
+        majorList = majorList[1:]
 
         for major in majorList:
             item = majorItem()
+            infoList = major.xpath('./td')
 
-            majorId = int(major.xpath('@id').extract()[0])
-            majorName = major.xpath('./text()').extract()[0]
+            majorId = infoList.xpath('./text()').extract()[2]
+            majorId = re.sub('\n', '', majorId)
+            majorId = re.sub(' ', '', majorId)
+
+            majorName = infoList.xpath('./a/text()').extract()[0]
             majorName = re.sub('\ue6a2', '', majorName)
+            majorName = re.sub('\n', '', majorName)
+            majorName = re.sub(' ', '', majorName)
 
             item['id'] = majorId
             item['name'] = majorName
             yield item
+
+    def parse_test(self, response):
+        self.logger.debug(response.url)
+        pass
