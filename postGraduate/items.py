@@ -108,6 +108,11 @@ class majorItem(scrapy.Item):
     id = scrapy.Field()
     name = scrapy.Field()
 
+class majorCollegeItem(scrapy.Item):
+    collection = table = 'majorCollege'
+    code = scrapy.Field()
+    name = scrapy.Field()
+    college = scrapy.Field()
 
 
 # 考试点Item
