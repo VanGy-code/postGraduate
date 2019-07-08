@@ -35,12 +35,26 @@ class collegeInfoItem(scrapy.Item):
 class enrollmentGuideIndexItem(scrapy.Item):
     collection = table = 'EnrollmentGuideIndex'
     collegeName = scrapy.Field()
-    articleNum = scrapy.Field()
-    enrollmentGuideTitle = scrapy.Field()
+    num = scrapy.Field()
+    title = scrapy.Field()
     releaseTime = scrapy.Field()
 
 class enrollmentGuideItem(scrapy.Item):
     collection = table = 'EnrollmentGuideAritcle'
+    collegeName = scrapy.Field()
+    title = scrapy.Field()
+    mainBody = scrapy.Field()
+
+class moreInfoIndexItem(scrapy.Item):  
+    collection = table = 'moreInfoIndex'
+    collegeName = scrapy.Field()
+    num = scrapy.Field()
+    title = scrapy.Field()
+    releaseTime = scrapy.Field()   
+
+
+class moreInfoItem(scrapy.Item):
+    collection = table = 'moreInfo'
     collegeName = scrapy.Field()
     title = scrapy.Field()
     mainBody = scrapy.Field()
