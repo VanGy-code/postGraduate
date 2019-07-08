@@ -218,32 +218,32 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             # 若该校既不是985也不是211，_type将返回空列表
             if _type or len(_type):
                 if _type[0].text == "985":
-                    item['is985'] = True
+                    item['is985'] = 1
                 else:
-                    item['is985'] = False
+                    item['is985'] = 0
 
                 if _type[1].text == "211":
-                    item['is211'] = True
+                    item['is211'] = 1
                 else:
-                    item['is211'] = False
+                    item['is211'] = 0
             else:
-                item['is985'] = False
-                item['is211'] = False
+                item['is985'] = 0
+                item['is211'] = 0
 
             # 解析学校是否为研究生院，若是则写True,反之写False
             haveGraduateSchool = attrs[4].find('i')
 
             if haveGraduateSchool != None:
-                item['haveGraduateSchool'] = True
+                item['haveGraduateSchool'] = 1
             else:
-                item['haveGraduateSchool'] = False
+                item['haveGraduateSchool'] = 0
 
             # 解释学校是否为自划线院校，各方面和上面的很想
             isSelfMarkingSchool = attrs[5].find('i')
             if isSelfMarkingSchool != None:
-                item['isSelfMarkingSchool'] = True
+                item['isSelfMarkingSchool'] = 1
             else:
-                item['isSelfMarkingSchool'] = False
+                item['isSelfMarkingSchool'] = 0
             yield item
 
     def parse_school_info(self, response):
@@ -313,6 +313,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                 releaseTime = re.sub('\n', '', releaseTime)
                 releaseTime = re.sub(' ', '', releaseTime)
 
+                item['collegeName'] = collegeName
                 item['num'] = articleNum
                 item['title'] = Title
                 item['releaseTime'] = releaseTime
@@ -372,6 +373,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                 releaseTime = re.sub('\n', '', releaseTime)
                 releaseTime = re.sub(' ', '', releaseTime)
 
+                item['collegeName'] = collegeName
                 item['num'] = articleNum
                 item['title'] = enrollmentGuideTitle
                 item['releaseTime'] = releaseTime
@@ -456,6 +458,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                 releaseTime = re.sub('\n', '', releaseTime)
                 releaseTime = re.sub(' ', '', releaseTime)
 
+                item['collegeName'] = collegeName
                 item['num'] = announcementNum
                 item['title'] = announcementTitle
                 item['releaseTime'] = releaseTime
