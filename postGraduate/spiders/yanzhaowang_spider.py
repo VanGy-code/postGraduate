@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from scrapy import FormRequest, Selector
 from scrapy.http import HtmlResponse
 from scrapy.linkextractors import LinkExtractor
+# from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy_splash import (SplashFormRequest, SplashJsonResponse,
@@ -15,7 +16,7 @@ from scrapy_splash import (SplashFormRequest, SplashJsonResponse,
 from postGraduate.items import (adjustMethodIndexItem, adjustMethodItem,
                                 collegeInfoItem, degreeItem,
                                 enrollmentGuideIndexItem, enrollmentGuideItem,
-                                fieldItem, majorItem,
+                                fieldItem, majorItem, majorCollegeItem,
                                 onlineRegistrationAnnouncementItem,
                                 subjectItem, yanzhaowangIntroItem)
 
@@ -42,11 +43,71 @@ class YanzhaowangSpiderSpider(CrawlSpider):
     base_major_url = 'https://yz.chsi.com.cn/zyk/specialityCategory.do'
 
     rules = (
-        # 院校库
-        Rule(LinkExtractor(
-            allow=r'/sch/',
-            restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'),
-            follow=True),
+        # # 院校库
+        # Rule(LinkExtractor(
+        #     allow=r'/sch/',
+        #     restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'),
+        #     follow=True),
+
+        # # 院校信息
+        # Rule(LinkExtractor(
+        #     allow=r'sch/schoolInfo--schId-.*\.dhtml',
+        #     restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'),
+        #     follow=True),
+
+        # # next page(下一页) follow是否跟进链接
+        # Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
+        #                    '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
+        #      callback='parse_index_url', follow=True),
+
+        # # # 院校简介
+        # Rule(LinkExtractor(
+        #     allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+        #     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
+        #     callback='parse_school_info',
+        #     follow=True),
+
+        # # 更多招生简章
+        # Rule(LinkExtractor(
+        #     allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
+        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+        #     '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
+        #     callback='parse_enrollment_guide_index',
+        #     follow=True),
+
+        # # 招生简章详情
+        # Rule(LinkExtractor(
+        #     allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+        #     restrict_xpaths='//div[contains(@class,"container")]//table'),
+        #     callback='parse_enrollment_guide',
+        #     follow=True),
+
+        # # 更多信息发布
+        # Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
+        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+        #                    '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),
+        #      follow=True),
+
+        # # 网报公告
+        # Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
+        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+        #                    '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement",
+        #      follow=True),
+
+        # # 更多调剂办法
+        # Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
+        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+        #                    '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),
+        #      callback='parse_adjust_method_index', follow=True),
+
+        # # 调剂办法详情
+        # Rule(LinkExtractor(
+        #     allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+        #     restrict_xpaths='//div[contains(@class,"container")]//table'),
+        #     callback='parse_adjust_method',
+        #     follow=True),
+
 
         # 专业库
         Rule(LinkExtractor(
@@ -56,89 +117,12 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             callback='parse_degree',
             follow=True),
 
-        # 院校信息
-        Rule(LinkExtractor(
-            allow=r'sch/schoolInfo--schId-.*\.dhtml',
-            restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'),
-            follow=True),
-
-        # next page(下一页) follow是否跟进链接
-        Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
-                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
-             callback='parse_index_url', follow=True),
-
-        # # 院校简介
-        Rule(LinkExtractor(
-            allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
-            callback='parse_school_info',
-            follow=True),
-
-        # # 院校设置
-        # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-        #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校设置")]'),
-        #                     callback='parse_school_settings',follow=False),
-
-        # # 专业介绍
-        # Rule(LinkExtractor(allow=r"/sch/listYzZyjs--schId-\d+\,categoryId-\d+\.dhtml",
-        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-        #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"专业介绍")]'),
-        #                     callback='parse_specialty_info',follow=False
-        #                     ),
-
-        # # 录取规则
-        # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #                     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-        #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"录取规则")]'),
-        #                     callback='parse_admission_rules',follow=False),
-
-        # # 调剂政策
-        # Rule(LinkExtractor(allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #                     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"调剂政策")]'),
-        #                     callback='parse_adjust_policy',follow=False),
-
-        # 更多招生简章
-        Rule(LinkExtractor(
-            allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
-            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-            '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
-            callback='parse_enrollment_guide_index',
-            follow=True),
-
-        # 招生简章详情
-        Rule(LinkExtractor(
-            allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
-            restrict_xpaths='//div[contains(@class,"container")]//table'),
-            callback='parse_enrollment_guide',
-            follow=True),
-
-        # 更多信息发布
-        Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
-                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-                           '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),
-             follow=True),
-
-        # 网报公告
-        Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
-                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-                           '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement",
-             follow=True),
-
-        # 更多调剂办法
-        Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
-                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-                           '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),
-             callback='parse_adjust_method_index', follow=True),
-
-        # 调剂办法详情
-        Rule(LinkExtractor(
-            allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
-            restrict_xpaths='//div[contains(@class,"container")]//table'),
-            callback='parse_adjust_method',
-            follow=True),
-
+        # 专业主页
+        # Rule(LinkExtractor(
+        #     allow=r"/zyk/specialityDetail.do\?zymc=(.*)&zydm=\d+\&cckey=\d+\&ssdm=&method=distribution#zyk-zyfb",
+        #     restrict_xpaths='//tr'),
+        #     callback='parse_test',
+        #     follow=True),
 
     )
 
@@ -443,7 +427,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         for degree in degreeList:
             item = degreeItem()
 
-            degreeId = int(degree.attrs['id'])
+            degreeId = degree.attrs['id']
             degreeName = degree.text
             degreeName = re.sub('\ue6a2', '', degreeName)
 
@@ -465,62 +449,119 @@ class YanzhaowangSpiderSpider(CrawlSpider):
         selector = Selector(text=response.body)
         fieldList = selector.xpath('//li')
 
-        for field in fieldList:
+        if len(fieldList):
 
-            item = fieldItem()
+            for field in fieldList:
 
-            fieldId = int(field.xpath('@id').extract()[0])
-            fieldName = field.xpath('./text()').extract()[0]
-            fieldName = re.sub('\ue6a2', '', fieldName)
+                item = fieldItem()
 
-            item['id'] = fieldId
-            item['name'] = fieldName
-            yield item
+                fieldId = field.xpath('@id').extract()[0]
+                fieldName = field.xpath('./text()').extract()[0]
+                fieldName = re.sub('\ue6a2', '', fieldName)
 
-        for field in fieldList:
-            fieldId = field.xpath('@id').extract()[0]
-            # self.logger.debug(degreeId)
-            yield SplashFormRequest(self.base_major_url,
-                                    formdata={'method': 'subCategoryMl',
-                                              'key': fieldId},
-                                    callback=self.parse_subject
-                                    )
+                item['id'] = fieldId
+                item['name'] = fieldName
+                yield item
+
+            for field in fieldList:
+                fieldId = field.xpath('@id').extract()[0]
+                # self.logger.debug(degreeId)
+                yield SplashFormRequest(self.base_major_url,
+                                        formdata={'method': 'subCategoryMl',
+                                                'key': fieldId},
+                                        callback=self.parse_subject
+                                        )
 
     def parse_subject(self, response):
 
         selector = Selector(text=response.body)
         subjectList = selector.xpath('//li')
 
-        for subject in subjectList:
-            item = subjectItem()
+        if len(subjectList):
+            for subject in subjectList:
+                item = subjectItem()
 
-            subjectId = int(subject.xpath('@id').extract()[0])
-            subjectName = subject.xpath('./text()').extract()[0]
-            subjectName = re.sub('\ue6a2', '', subjectName)
+                subjectId = subject.xpath('@id').extract()[0]
+                subjectName = subject.xpath('./text()').extract()[0]
+                subjectName = re.sub('\ue6a2', '', subjectName)
 
-            item['id'] = subjectId
-            item['name'] = subjectName
-            yield item
+                item['id'] = subjectId
+                item['name'] = subjectName
+                yield item
 
-        for subject in subjectList:
-            subjectId = subject.xpath('@id').extract()[0]
-            yield SplashFormRequest(self.base_major_url,
-                                    formdata={'method': 'subCategoryXk',
-                                              'key': subjectId},
-                                    callback=self.parse_major
-                                    )
+            for subject in subjectList:
+                subjectId = subject.xpath('@id').extract()[0]
+                yield SplashFormRequest(self.base_major_url,
+                                        formdata={'method': 'subCategoryXk',
+                                                'key': subjectId},
+                                        callback=self.parse_major
+                                        )
 
     def parse_major(self, response):
         selector = Selector(text=response.body)
-        majorList = selector.xpath('//li')
+
+        links = LinkExtractor(
+                allow=r"/zyk/specialityDetail.do\?zymc=(.*)&zydm=\d+\&cckey=\d+\&ssdm=&method=distribution#zyk-zyfb",
+                restrict_xpaths='//tr').extract_links(response)
+
+
+        majorList = selector.xpath('//tr')
+
+
+        majorList = majorList[1:]
 
         for major in majorList:
             item = majorItem()
+            infoList = major.xpath('./td')
 
-            majorId = int(major.xpath('@id').extract()[0])
-            majorName = major.xpath('./text()').extract()[0]
+            majorId = infoList.xpath('./text()').extract()[2]
+            majorId = re.sub('\n', '', majorId)
+            majorId = re.sub(' ', '', majorId)
+
+            majorName = infoList.xpath('./a/text()').extract()[0]
             majorName = re.sub('\ue6a2', '', majorName)
+            majorName = re.sub('\n', '', majorName)
+            majorName = re.sub(' ', '', majorName)
 
             item['id'] = majorId
             item['name'] = majorName
             yield item
+
+        for link in links:
+            yield scrapy.Request(link.url, callback=self.parse_test)
+
+    def parse_test(self, response):
+
+        soup = BeautifulSoup(response.body, 'lxml')
+
+        majorInfo = soup.find('div',attrs={'class':'zyk-base-info'})
+
+        self.logger.debug(majorInfo)
+        if majorInfo is not None:
+            majorInfo = majorInfo.text
+            majorInfo = re.sub('专业名称：', '', majorInfo)
+            majorInfo = re.sub('专业代码：', ',', majorInfo)
+            majorInfo = re.sub('门类/类别：', ',', majorInfo)
+            majorInfo = re.sub('学科/类别：', ',', majorInfo)
+            majorInfo = re.sub(' ', '', majorInfo)
+            majorInfo = re.sub(r'\n', '', majorInfo)
+            majorInfo = re.sub('\u2002', '', majorInfo)
+            majorInfo = re.sub(r'\r', '', majorInfo)
+            majorList = majorInfo.split(',')
+
+
+        table_container = soup.find('div', attrs={'class': 'tab-container'})
+        if table_container is not None:
+            collegeList = table_container.findAll('li')
+            
+            if len(collegeList):
+                for college in collegeList:
+                    item = majorCollegeItem()
+
+                    name = college.attrs['title']
+
+                    item['code'] = majorList[1]
+                    item['name'] = name
+                    item['college'] = majorList[0]
+
+                    yield item
