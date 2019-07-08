@@ -142,12 +142,15 @@ ___
 
 ___
 
-1.数据库建表
+1.数据库设计
+
+
+2.数据库建表
 
 - [ ] 建立MySQL 数据库
 - [ ] 插入基本表  
 
-2.使用Item Pipeline存储到MySQL:
+3.使用Item Pipeline存储到MySQL:
 
 - [ ] MysqlPipeline功能实现
 
