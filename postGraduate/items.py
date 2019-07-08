@@ -28,29 +28,9 @@ class yanzhaowangIntroItem(scrapy.Item):
 class collegeInfoItem(scrapy.Item):
     collection = table = 'schoolInfo'
     collegeName = scrapy.Field()
-    collegeLeaderInfo = scrapy.Field()
-    collegelIntro = scrapy.Field()
+    collegeLeaderInfo = scrapy.Field
+    collegeIntro = scrapy.Field()
     surrounding = scrapy.Field()
-
-
-class schoolSettingItem(scrapy.Item):
-    collection = table = 'schoolSetting'
-    collegeName = scrapy.Field()
-    schoolName = scrapy.Field()
-
-class specialtyInfoItem(scrapy.Item):
-    collection = table = 'specialtyInfo'
-    collegeName = scrapy.Field()
-    specialtyName = scrapy.Field()
-
-class admissionRuleItem(scrapy.Item):
-    collection = table = 'admissionRule'
-    admissionPolicy = scrapy.Field()
-    crossDisciplinaryPolicy = scrapy.Field()
-    
-class adjustPolicyItem(scrapy.Item):
-    collection = table = 'adjustPolicy'
-    adjustPolicy = scrapy.Field()
 
 class enrollmentGuideIndexItem(scrapy.Item):
     collection = table = 'EnrollmentGuideIndex'

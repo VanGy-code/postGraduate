@@ -287,7 +287,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
         item['collegeLeaderInfo'] = _article[0]
 
-        item['collegelIntro'] = _article[1]
+        item['collegeIntro'] = _article[1]
 
         item['surrounding'] = _article[2]
 
