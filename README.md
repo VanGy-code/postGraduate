@@ -44,6 +44,8 @@ ___
 
 3.Splash  
 
+&emsp;&emsp;
+
 4.MySQL
   
 ## 三、使用技术介绍
@@ -119,6 +121,7 @@ ___
 - [x] 使用BeautifulSoup，提取招生政策详情
 - [x] 使用BeautifulSoup，提取网报公告详情
 - [x] 使用BeautifulSoup，提取调剂办法详情
+
 2.专业库页面数据提取：
 
 - [x] 使用BeautifulSoup，提取 门类/类别
