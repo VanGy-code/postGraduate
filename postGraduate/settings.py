@@ -103,6 +103,6 @@ MYSQL_USER = 'root'
 
 MYSQL_PASSWORD = '123456'
 
-MYSQL_DATABASE = 'spider'
+MYSQL_DATABASE = 'postGraduate'
 
 SPLASH_URL = 'http://47.102.139.163:8050'
