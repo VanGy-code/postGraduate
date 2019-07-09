@@ -314,7 +314,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                 releaseTime = re.sub(' ', '', releaseTime)
 
                 item['collegeName'] = collegeName
-                item['num'] = articleNum
+                # item['num'] = articleNum
                 item['title'] = Title
                 item['releaseTime'] = releaseTime
 
@@ -374,7 +374,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                 releaseTime = re.sub(' ', '', releaseTime)
 
                 item['collegeName'] = collegeName
-                item['num'] = articleNum
+                # item['num'] = articleNum
                 item['title'] = enrollmentGuideTitle
                 item['releaseTime'] = releaseTime
 
@@ -459,7 +459,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                 releaseTime = re.sub(' ', '', releaseTime)
 
                 item['collegeName'] = collegeName
-                item['num'] = announcementNum
+                # item['num'] = announcementNum
                 item['title'] = announcementTitle
                 item['releaseTime'] = releaseTime
 
@@ -517,13 +517,16 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             yield SplashFormRequest(self.base_major_url,
                                     formdata={'method': 'subCategoryMl',
                                               'key': degreeId},
-                                    callback=self.parse_field
+                                    callback=self.parse_field,
+                                    meta={'degreeId': degreeId}
                                     )
 
     def parse_field(self, response):
 
         selector = Selector(text=response.body)
         fieldList = selector.xpath('//li')
+
+        degreeId = response.meta['degreeId']
 
         if len(fieldList):
 
@@ -537,6 +540,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
                 item['id'] = fieldId
                 item['name'] = fieldName
+                item['degreeId'] = degreeId
                 yield item
 
             for field in fieldList:
@@ -545,13 +549,16 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                 yield SplashFormRequest(self.base_major_url,
                                         formdata={'method': 'subCategoryMl',
                                                 'key': fieldId},
-                                        callback=self.parse_subject
+                                        callback=self.parse_subject,
+                                        meta={'fieldId': fieldId}
                                         )
 
     def parse_subject(self, response):
 
         selector = Selector(text=response.body)
         subjectList = selector.xpath('//li')
+
+        fieldId = response.meta['fieldId']
 
         if len(subjectList):
             for subject in subjectList:
@@ -563,6 +570,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
                 item['id'] = subjectId
                 item['name'] = subjectName
+                item['fieldId'] = fieldId
                 yield item
 
             for subject in subjectList:
@@ -570,7 +578,8 @@ class YanzhaowangSpiderSpider(CrawlSpider):
                 yield SplashFormRequest(self.base_major_url,
                                         formdata={'method': 'subCategoryXk',
                                                 'key': subjectId},
-                                        callback=self.parse_major
+                                        callback=self.parse_major,
+                                        meta={'subjectId': subjectId}
                                         )
 
     def parse_major(self, response):
@@ -582,9 +591,9 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
 
         majorList = selector.xpath('//tr')
-
-
         majorList = majorList[1:]
+
+        subjectId = response.meta['subjectId']
 
         for major in majorList:
             item = majorItem()
@@ -601,6 +610,7 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
             item['id'] = majorId
             item['name'] = majorName
+            item['subjectId'] = subjectId
             yield item
 
         for link in links:

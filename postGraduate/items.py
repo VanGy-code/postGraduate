@@ -35,7 +35,7 @@ class collegeInfoItem(scrapy.Item):
 class enrollmentGuideIndexItem(scrapy.Item):
     collection = table = 'EnrollmentGuideIndex'
     collegeName = scrapy.Field()
-    num = scrapy.Field()
+    # num = scrapy.Field()
     title = scrapy.Field()
     releaseTime = scrapy.Field()
 
@@ -48,7 +48,7 @@ class enrollmentGuideItem(scrapy.Item):
 class moreInfoIndexItem(scrapy.Item):  
     collection = table = 'moreInfoIndex'
     collegeName = scrapy.Field()
-    num = scrapy.Field()
+    # num = scrapy.Field()
     title = scrapy.Field()
     releaseTime = scrapy.Field()   
 
@@ -69,7 +69,7 @@ class onlineRegistrationAnnouncementItem(scrapy.Item):
 class adjustMethodIndexItem(scrapy.Item):
     collection = table = 'adjustMethodIndex'
     collegeName = scrapy.Field()
-    num = scrapy.Field()
+    # num = scrapy.Field()
     title = scrapy.Field()
     releaseTime = scrapy.Field()
 
@@ -81,7 +81,7 @@ class adjustMethodItem(scrapy.Item):
     mainBody = scrapy.Field()
 
 class degreeItem(scrapy.Item):
-    collection = table = 'degreeLevel'
+    collection = table = 'degree'
     id = scrapy.Field()
     name = scrapy.Field()
 
@@ -89,18 +89,21 @@ class fieldItem(scrapy.Item):
     collection = table = 'field'
     id = scrapy.Field()
     name = scrapy.Field()
+    degreeId = scrapy.Field()
 
 
 class subjectItem(scrapy.Item):
     collection = table = 'subject'
     id = scrapy.Field()
     name = scrapy.Field()
+    fieldId = scrapy.Field()
 
 
 class majorItem(scrapy.Item):
-    collection = table = 'subject'
+    collection = table = 'major'
     id = scrapy.Field()
     name = scrapy.Field()
+    subjectId = scrapy.Field()
 
 class majorCollegeItem(scrapy.Item):
     collection = table = 'majorCollege'
