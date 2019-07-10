@@ -2,7 +2,7 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from postGraduate.items import kaoshidianItem
+from items import kaoshidianItem
 from bs4 import BeautifulSoup
 import lxml
 import re

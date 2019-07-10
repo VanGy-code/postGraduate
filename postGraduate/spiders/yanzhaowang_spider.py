@@ -13,7 +13,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy_splash import (SplashFormRequest, SplashJsonResponse,
                            SplashRequest, SplashResponse, SplashTextResponse)
 
-from postGraduate.items import (adjustMethodIndexItem, adjustMethodItem,
+from items import (adjustMethodIndexItem, adjustMethodItem,
                                 collegeInfoItem, degreeItem,
                                 enrollmentGuideIndexItem, enrollmentGuideItem,
                                 fieldItem, majorCollegeItem, majorItem,
