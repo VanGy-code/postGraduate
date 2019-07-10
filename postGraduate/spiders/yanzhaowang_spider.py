@@ -36,7 +36,7 @@ end
 """
 
 
-class YanzhaowangSpiderSpider(CrawlSpider):
+class YanzhaowangSpider(CrawlSpider):
     name = 'yanzhaowang_spider'
     allowed_domains = ['yz.chsi.com.cn']
     start_urls = ['https://yz.chsi.com.cn']
@@ -56,33 +56,33 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'),
             follow=True),
 
-        # # next page(下一页) follow是否跟进链接
-        # Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
-        #                    '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
-        #      callback='parse_index_url', follow=True),
+        # next page(下一页) follow是否跟进链接
+        Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
+                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
+             callback='parse_index_url', follow=True),
 
-        # # 院校简介
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-        #     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
-        #     callback='parse_school_info',
-        #     follow=True),
+        # 院校简介
+        Rule(LinkExtractor(
+            allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
+            callback='parse_school_info',
+            follow=True),
 
-        # # 更多招生简章
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #     '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
-        #     callback='parse_enrollment_guide_index',
-        #     follow=True),
+        # 更多招生简章
+        Rule(LinkExtractor(
+            allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+            '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
+            callback='parse_enrollment_guide_index',
+            follow=True),
 
-        # # 招生简章详情
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//table'),
-        #     callback='parse_enrollment_guide',
-        #     follow=True),
+        # 招生简章详情
+        Rule(LinkExtractor(
+            allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//table'),
+            callback='parse_enrollment_guide',
+            follow=True),
 
         # 更多信息发布
         Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
@@ -97,33 +97,33 @@ class YanzhaowangSpiderSpider(CrawlSpider):
             callback='parse_more_info',
             follow=True),
 
-        # # 网报公告
-        # Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
-        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #                    '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement",
-        #      follow=True),
+        # 网报公告
+        Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                           '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement",
+             follow=True),
 
-        # # 更多调剂办法
-        # Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
-        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #                    '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),
-        #      callback='parse_adjust_method_index', follow=True),
+        # 更多调剂办法
+        Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                           '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),
+             callback='parse_adjust_method_index', follow=True),
 
-        # # 调剂办法详情
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//table'),
-        #     callback='parse_adjust_method',
-        #     follow=True),
+        # 调剂办法详情
+        Rule(LinkExtractor(
+            allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//table'),
+            callback='parse_adjust_method',
+            follow=True),
 
 
         # 专业库
-        # Rule(LinkExtractor(
-        #     allow=r"/zyk",
-        #     restrict_xpaths='//ul[contains(@class,"nav-td")]'),
-        #     process_request='splash_request',
-        #     callback='parse_degree',
-        #     follow=True),
+        Rule(LinkExtractor(
+            allow=r"/zyk",
+            restrict_xpaths='//ul[contains(@class,"nav-td")]'),
+            process_request='splash_request',
+            callback='parse_degree',
+            follow=True),
 
         # 专业主页
         # Rule(LinkExtractor(
@@ -200,9 +200,9 @@ class YanzhaowangSpiderSpider(CrawlSpider):
 
             # 可能是研招网的反爬虫措施，用.text获取的文本有一些奇怪的东西
             # 这里用正则表达式整理一下
-            name = re.sub('\r\n                                        ', '',
-                          name)
-            name = re.sub('\r\n                                    ', '', name)
+            name = re.sub('\r', '',name)
+            name = re.sub('\n', '', name)
+            name = re.sub(' ', '', name)
 
             # 将学校名写item
             item['Institution'] = name

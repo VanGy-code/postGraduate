@@ -14,6 +14,8 @@ class PostgraduateItem(scrapy.Item):
     pass
 
 # 研招网简介Item
+
+
 class yanzhaowangIntroItem(scrapy.Item):
     collection = table = 'Intro'
     Institution = scrapy.Field()
@@ -25,12 +27,14 @@ class yanzhaowangIntroItem(scrapy.Item):
     isSelfMarkingSchool = scrapy.Field()
     url = scrapy.Field()
 
+
 class collegeInfoItem(scrapy.Item):
     collection = table = 'schoolInfo'
     collegeName = scrapy.Field()
     collegeLeaderInfo = scrapy.Field
     collegeIntro = scrapy.Field()
     surrounding = scrapy.Field()
+
 
 class enrollmentGuideIndexItem(scrapy.Item):
     collection = table = 'EnrollmentGuideIndex'
@@ -39,18 +43,20 @@ class enrollmentGuideIndexItem(scrapy.Item):
     title = scrapy.Field()
     releaseTime = scrapy.Field()
 
+
 class enrollmentGuideItem(scrapy.Item):
     collection = table = 'EnrollmentGuideAritcle'
     collegeName = scrapy.Field()
     title = scrapy.Field()
     mainBody = scrapy.Field()
 
-class moreInfoIndexItem(scrapy.Item):  
+
+class moreInfoIndexItem(scrapy.Item):
     collection = table = 'moreInfoIndex'
     collegeName = scrapy.Field()
     # num = scrapy.Field()
     title = scrapy.Field()
-    releaseTime = scrapy.Field()   
+    releaseTime = scrapy.Field()
 
 
 class moreInfoItem(scrapy.Item):
@@ -58,6 +64,7 @@ class moreInfoItem(scrapy.Item):
     collegeName = scrapy.Field()
     title = scrapy.Field()
     mainBody = scrapy.Field()
+
 
 class onlineRegistrationAnnouncementItem(scrapy.Item):
     collection = table = 'onlineRegistrationAnnouncement'
@@ -80,10 +87,12 @@ class adjustMethodItem(scrapy.Item):
     title = scrapy.Field()
     mainBody = scrapy.Field()
 
+
 class degreeItem(scrapy.Item):
     collection = table = 'degree'
     id = scrapy.Field()
     name = scrapy.Field()
+
 
 class fieldItem(scrapy.Item):
     collection = table = 'field'
@@ -105,6 +114,7 @@ class majorItem(scrapy.Item):
     name = scrapy.Field()
     subjectId = scrapy.Field()
 
+
 class majorCollegeItem(scrapy.Item):
     collection = table = 'majorCollege'
     code = scrapy.Field()
@@ -124,5 +134,3 @@ class kaoshidianItem(scrapy.Item):
     areaCompetition = scrapy.Field()
     graduateSchoolRank = scrapy.Field()
     collegeInfo = scrapy.Field()
-
-

@@ -55,6 +55,7 @@ SPIDER_MIDDLEWARES = {
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
    'postGraduate.middlewares.RandomUserAgentMiddleware': 543,
+   'postGraduate.middlewares.ProxyMiddleware': 555,
    'scrapy_splash.SplashCookiesMiddleware': 723,
    'scrapy_splash.SplashMiddleware': 725,
    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
@@ -94,6 +95,8 @@ AUTOTHROTTLE_MAX_DELAY = 30
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
 DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+
+PROXY_URL = 'http://47.102.139.163:5010/get/'
 
 MYSQL_HOST = '47.102.139.163'
 
