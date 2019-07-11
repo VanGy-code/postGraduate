@@ -7,15 +7,7 @@
 
 import scrapy
 
-
-class PostgraduateItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
-
 # 研招网简介Item
-
-
 class yanzhaowangIntroItem(scrapy.Item):
     collection = table = 'Intro'
     Institution = scrapy.Field()

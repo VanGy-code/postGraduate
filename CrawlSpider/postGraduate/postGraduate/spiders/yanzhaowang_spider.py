@@ -7,19 +7,16 @@ from bs4 import BeautifulSoup
 from scrapy import FormRequest, Selector
 from scrapy.http import HtmlResponse
 from scrapy.linkextractors import LinkExtractor
-# from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy_splash import (SplashFormRequest, SplashJsonResponse,
                            SplashRequest, SplashResponse, SplashTextResponse)
 
-from items import (adjustMethodIndexItem, adjustMethodItem,
-                                collegeInfoItem, degreeItem,
-                                enrollmentGuideIndexItem, enrollmentGuideItem,
-                                fieldItem, majorCollegeItem, majorItem,
-                                moreInfoIndexItem, moreInfoItem,
-                                onlineRegistrationAnnouncementItem,
-                                subjectItem, yanzhaowangIntroItem)
+from postGraduate.items import (adjustMethodIndexItem, adjustMethodItem, collegeInfoItem,
+                   degreeItem, enrollmentGuideIndexItem, enrollmentGuideItem,
+                   fieldItem, majorCollegeItem, majorItem, moreInfoIndexItem,
+                   moreInfoItem, onlineRegistrationAnnouncementItem,
+                   subjectItem, yanzhaowangIntroItem)
 
 """
 定义Lua脚本

@@ -70,7 +70,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 # ITEM_PIPELINES = {
-#    'postGraduate.pipelines.MysqlPipline': 300,
+#     'postGraduate.pipelines.MysqlPipline': 300,
 # }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -96,4 +96,16 @@ HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
 DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 
+PROXY_URL = 'http://47.102.139.163:5010/get/'
 
+MYSQL_HOST = '47.102.139.163'
+
+MYSQL_PORT = 3306
+
+MYSQL_USER = 'root'
+
+MYSQL_PASSWORD = '123456'
+
+MYSQL_DATABASE = 'postGraduate'
+
+SPLASH_URL = 'http://47.102.139.163:8050'
