@@ -23,13 +23,13 @@ class yanzhaowangIntroItem(scrapy.Item):
 class collegeInfoItem(scrapy.Item):
     collection = table = 'schoolInfo'
     collegeName = scrapy.Field()
-    collegeLeaderInfo = scrapy.Field
+    collegeLeaderInfo = scrapy.Field()
     collegeIntro = scrapy.Field()
     surrounding = scrapy.Field()
 
 
 class enrollmentGuideIndexItem(scrapy.Item):
-    collection = table = 'EnrollmentGuideIndex'
+    collection = table = 'enrollmentGuideIndex'
     collegeName = scrapy.Field()
     # num = scrapy.Field()
     title = scrapy.Field()
@@ -37,7 +37,7 @@ class enrollmentGuideIndexItem(scrapy.Item):
 
 
 class enrollmentGuideItem(scrapy.Item):
-    collection = table = 'EnrollmentGuideAritcle'
+    collection = table = 'enrollmentGuide'
     collegeName = scrapy.Field()
     title = scrapy.Field()
     mainBody = scrapy.Field()

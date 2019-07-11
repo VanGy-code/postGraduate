@@ -54,9 +54,9 @@ class YanzhaowangSpider(CrawlSpider):
             follow=True),
 
         # next page(下一页) follow是否跟进链接
-        Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
-                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
-             callback='parse_index_url', follow=True),
+        # Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
+        #                    '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
+        #      callback='parse_index_url', follow=True),
 
         # 院校简介
         Rule(LinkExtractor(
@@ -269,6 +269,8 @@ class YanzhaowangSpider(CrawlSpider):
             _article[i] = re.sub('\xa0', '', _article[i])
             _article[i] = re.sub('\t', '', _article[i])
             _article[i] = re.sub(' ', '', _article[i])
+            _article[i] = re.sub('\n\n', '\n', _article[i])
+            _article[i] = re.sub('\n\n', '\n', _article[i])
 
         item = collegeInfoItem()
 
@@ -332,6 +334,8 @@ class YanzhaowangSpider(CrawlSpider):
 
         mainBody = re.sub('\xa0','',mainBody)
         mainBody = re.sub('\t','',mainBody)
+        mainBody = re.sub('\n\n','',mainBody)
+        mainBody = re.sub('\u3000', '', mainBody)
 
         item = moreInfoItem()
         item['collegeName'] = collegeName
@@ -392,6 +396,8 @@ class YanzhaowangSpider(CrawlSpider):
 
         mainBody = re.sub('\xa0','',mainBody)
         mainBody = re.sub('\t','',mainBody)
+        mainBody = re.sub('\n\n','',mainBody)
+        mainBody = re.sub('\u3000', '', mainBody)
 
         item = enrollmentGuideItem()
         item['collegeName'] = collegeName
@@ -419,6 +425,9 @@ class YanzhaowangSpider(CrawlSpider):
         mainBody = re.sub('<br>', '\n', mainBody)
         mainBody = re.sub('\xa0','',mainBody)
         mainBody = re.sub('\t','',mainBody)
+        mainBody = re.sub('\n\n', '', mainBody)
+        mainBody = re.sub('\u3000', '', mainBody)
+            
 
         item['collegeName'] = collegeName
         item['title'] = articleTitle
@@ -477,6 +486,8 @@ class YanzhaowangSpider(CrawlSpider):
 
         mainBody = re.sub('\xa0', '', mainBody)
         mainBody = re.sub('\t','',mainBody)
+        mainBody = re.sub('\n\n', '', mainBody)
+        mainBody = re.sub('\u3000', '', mainBody)
 
         item = adjustMethodItem()
         item['collegeName'] = collegeName
@@ -644,7 +655,7 @@ class YanzhaowangSpider(CrawlSpider):
                     name = college.attrs['title']
 
                     item['code'] = majorList[1]
-                    item['name'] = name
-                    item['college'] = majorList[0]
+                    item['name'] = majorList[0]
+                    item['college'] = name
 
                     yield item

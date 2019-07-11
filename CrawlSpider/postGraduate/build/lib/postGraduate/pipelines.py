@@ -5,6 +5,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import pymysql
+from pymysql.err import OperationalError
 
 class PostgraduatePipeline(object):
     def process_item(self, item, spider):
@@ -31,17 +32,23 @@ class MysqlPipline(object):
         )
 
     def open_spider(self,spider):
-        self.db = pymysql.connect(self.host, self.user, self.password, self.database, charset='utf-8', port=self.port)
+        self.db = pymysql.connect(self.host, self.user, self.password, self.database, charset='utf8', port=self.port)
         self.curosr = self.db.cursor()
-
+        
     def close_spider(self,spider):
         self.db.close()
 
     def process_item(self, item, spider):
-        data = dict(item)
-        keys = ','.join(data.keys())
-        values = ','.join(['%s']*len(data))
-        sql = 'insert into %s (%s) values (%s)' % (item.table, keys, values)
-        self.curosr.execute(sql, tuple(data.values()))
-        self.db.commit()
-        return item
+        try:
+           self.db.ping(reconnect=True)
+        except OperationalError:
+            self.db = pymysql.connect(
+                self.host, self.user, self.password, self.database, charset='utf8', port=self.port)
+        finally:
+            data = dict(item)
+            keys = ','.join(data.keys())
+            values = ','.join(['%s']*len(data))
+            sql = 'insert into %s (%s) values (%s)' % (item.table, keys, values)
+            self.curosr.execute(sql, tuple(data.values()))
+            self.db.commit()
+            return item
