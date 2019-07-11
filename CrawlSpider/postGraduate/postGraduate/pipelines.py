@@ -31,7 +31,7 @@ class MysqlPipline(object):
         )
 
     def open_spider(self,spider):
-        self.db = pymysql.connect(self.host, self.user, self.password, self.database, charset='utf-8', port=self.port)
+        self.db = pymysql.connect(self.host, self.user, self.password, self.database, charset='utf8', port=self.port)
         self.curosr = self.db.cursor()
 
     def close_spider(self,spider):
