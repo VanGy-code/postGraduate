@@ -45,6 +45,7 @@ class YanzhaowangSpider(CrawlSpider):
         Rule(LinkExtractor(
             allow=r'/sch/',
             restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'),
+            callback='parse_index_url',
             follow=True),
 
         # 院校信息
@@ -54,9 +55,9 @@ class YanzhaowangSpider(CrawlSpider):
             follow=True),
 
         # next page(下一页) follow是否跟进链接
-        # Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
-        #                    '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
-        #      callback='parse_index_url', follow=True),
+        Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
+                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
+             callback='parse_index_url', follow=True),
 
         # 院校简介
         Rule(LinkExtractor(
@@ -630,7 +631,7 @@ class YanzhaowangSpider(CrawlSpider):
 
         majorInfo = soup.find('div',attrs={'class':'zyk-base-info'})
 
-        self.logger.debug(majorInfo)
+        # self.logger.debug(majorInfo)
         if majorInfo is not None:
             majorInfo = majorInfo.text
             majorInfo = re.sub('专业名称：', '', majorInfo)

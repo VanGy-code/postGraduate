@@ -21,7 +21,7 @@ class yanzhaowangIntroItem(scrapy.Item):
 
 
 class collegeInfoItem(scrapy.Item):
-    collection = table = 'schoolInfo'
+    collection = table = 'collegeInfo'
     collegeName = scrapy.Field()
     collegeLeaderInfo = scrapy.Field()
     collegeIntro = scrapy.Field()
