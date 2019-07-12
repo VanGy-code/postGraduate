@@ -123,13 +123,6 @@ class YanzhaowangSpider(CrawlSpider):
             callback='parse_degree',
             follow=True),
 
-        # 专业主页
-        # Rule(LinkExtractor(
-        #     allow=r"/zyk/specialityDetail.do\?zymc=(.*)&zydm=\d+\&cckey=\d+\&ssdm=&method=distribution#zyk-zyfb",
-        #     restrict_xpaths='//tr'),
-        #     callback='parse_test',
-        #     follow=True),
-
     )
 
     """
@@ -311,7 +304,7 @@ class YanzhaowangSpider(CrawlSpider):
 
                 releaseTime = article.findAll('td')[2].text
                 releaseTime = re.sub('\n', '', releaseTime)
-                releaseTime = re.sub(' ', '', releaseTime)
+                releaseTime = re.sub('  ', '', releaseTime)
 
                 item['collegeName'] = collegeName
                 # item['num'] = articleNum
@@ -373,7 +366,7 @@ class YanzhaowangSpider(CrawlSpider):
 
                 releaseTime = article.findAll('td')[2].text
                 releaseTime = re.sub('\n', '', releaseTime)
-                releaseTime = re.sub(' ', '', releaseTime)
+                releaseTime = re.sub('  ', '', releaseTime)
 
                 item['collegeName'] = collegeName
                 # item['num'] = articleNum
@@ -463,7 +456,7 @@ class YanzhaowangSpider(CrawlSpider):
 
                 releaseTime = announcement.findAll('td')[2].text
                 releaseTime = re.sub('\n', '', releaseTime)
-                releaseTime = re.sub(' ', '', releaseTime)
+                releaseTime = re.sub('  ', '', releaseTime)
 
                 item['collegeName'] = collegeName
                 # item['num'] = announcementNum
