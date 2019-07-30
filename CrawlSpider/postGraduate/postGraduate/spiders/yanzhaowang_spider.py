@@ -41,78 +41,78 @@ class YanzhaowangSpider(CrawlSpider):
     base_major_url = 'https://yz.chsi.com.cn/zyk/specialityCategory.do'
 
     rules = (
-        # # 院校库
-        # Rule(LinkExtractor(
-        #     allow=r'/sch/',
-        #     restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'),
-        #     callback='parse_index_url',
-        #     follow=True),
+        # 院校库
+        Rule(LinkExtractor(
+            allow=r'/sch/',
+            restrict_xpaths='//div[contains(@class,"ch-nav-box-index")]'),
+            callback='parse_index_url',
+            follow=True),
 
-        # # 院校信息
-        # Rule(LinkExtractor(
-        #     allow=r'sch/schoolInfo--schId-.*\.dhtml',
-        #     restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'),
-        #     follow=True),
+        # 院校信息
+        Rule(LinkExtractor(
+            allow=r'sch/schoolInfo--schId-.*\.dhtml',
+            restrict_xpaths='//div[@class="yxk-table"]//table[@class="ch-table"]'),
+            follow=True),
 
-        # # next page(下一页) follow是否跟进链接
-        # Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
-        #                    '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
-        #      callback='parse_index_url', follow=True),
+        # next page(下一页) follow是否跟进链接
+        Rule(LinkExtractor(allow=r'\?start=\d+', restrict_xpaths='//div[contains(@class,"pager-box")]'
+                           '//ul[contains(@class,"ch-page")]//li[@class="lip "]//i[@class="iconfont"]/..'),
+             callback='parse_index_url', follow=True),
 
-        # # 院校简介
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
-        #     '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
-        #     callback='parse_school_info',
-        #     follow=True),
+        # 院校简介
+        Rule(LinkExtractor(
+            allow=r"/sch/schoolInfo--schId-\d+\,categoryId-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-content")]'
+            '//ul[contains(@class,"yxk-link-list")]//a[contains(.,"院校简介")]'),
+            callback='parse_school_info',
+            follow=True),
 
-        # # 更多招生简章
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #     '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
-        #     callback='parse_enrollment_guide_index',
-        #     follow=True),
+        # 更多招生简章
+        Rule(LinkExtractor(
+            allow=r"/sch/listZszc--schId-\d+\,categoryId-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+            '//h4[contains(.,"招生简章")]//a[contains(.,"更多")]'),
+            callback='parse_enrollment_guide_index',
+            follow=True),
 
-        # # 招生简章详情
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//table'),
-        #     callback='parse_enrollment_guide',
-        #     follow=True),
+        # 招生简章详情
+        Rule(LinkExtractor(
+            allow=r"/sch/viewZszc--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//table'),
+            callback='parse_enrollment_guide',
+            follow=True),
 
-        # # 更多信息发布
-        # Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
-        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #                    '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),callback='parse_more_info_index',
-        #      follow=True),
+        # 更多信息发布
+        Rule(LinkExtractor(allow=r"/sch/listBulletin--schId-\d+\,categoryId-\d+\.dhtml",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                           '//h4[contains(.,"信息发布")]//a[contains(.,"更多")]'),callback='parse_more_info_index',
+             follow=True),
 
-        # # 信息发布详情
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/viewBulletin--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//table'),
-        #     callback='parse_more_info',
-        #     follow=True),
+        # 信息发布详情
+        Rule(LinkExtractor(
+            allow=r"/sch/viewBulletin--infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//table'),
+            callback='parse_more_info',
+            follow=True),
 
-        # # 网报公告
-        # Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
-        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #                    '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement",
-        #      follow=True),
+        # 网报公告
+        Rule(LinkExtractor(allow=r"/sswbgg/pages/msg_detail.jsp\?dwdm=\d+\&msg_id=\d+",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                           '//table[contains(@id,"wbggtable")]'), callback="parse_online_registration_announcement",
+             follow=True),
 
-        # # 更多调剂办法
-        # Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
-        #                    restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
-        #                    '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),
-        #      callback='parse_adjust_method_index', follow=True),
+        # 更多调剂办法
+        Rule(LinkExtractor(allow=r"/sch/tjzc--method-listPub,schId-\d+\,categoryId-\d+\.dhtml",
+                           restrict_xpaths='//div[contains(@class,"container")]//div[contains(@class,"yxk-table-con")]'
+                           '//h4[contains(.,"调剂办法")]//a[contains(.,"更多")]'),
+             callback='parse_adjust_method_index', follow=True),
 
-        # # 调剂办法详情
-        # Rule(LinkExtractor(
-        #     allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
-        #     restrict_xpaths='//div[contains(@class,"container")]//table'),
-        #     callback='parse_adjust_method',
-        #     follow=True),
+        # 调剂办法详情
+        Rule(LinkExtractor(
+            allow=r"/sch/tjzc--method-viewPub,infoId-\d+\,categoryId-\d+\,schId-\d+\,mindex-\d+\.dhtml",
+            restrict_xpaths='//div[contains(@class,"container")]//table'),
+            callback='parse_adjust_method',
+            follow=True),
 
 
         # 专业库
