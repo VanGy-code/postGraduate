@@ -166,12 +166,12 @@ ___
 
 2.数据库建表
 
-- [ ] 建立MySQL 数据库
-- [ ] 插入基本表  
+- [x] 建立MySQL 数据库
+- [x] 插入基本表  
 
 3.使用Item Pipeline存储到MySQL:
 
-- [ ] MysqlPipeline功能实现
+- [x] MysqlPipeline功能实现
 
 ## 七、使用说明
 

@@ -512,16 +512,22 @@ class YanzhaowangSpider(CrawlSpider):
             item['id'] = degreeId
             item['name'] = degreeName
             yield item
-
-        for degree in degreeList:
-            degreeId = degree.attrs['id']
-            # self.logger.debug(degreeId)
             yield SplashFormRequest(self.base_major_url,
                                     formdata={'method': 'subCategoryMl',
                                               'key': degreeId},
                                     callback=self.parse_field,
                                     meta={'degreeId': degreeId}
                                     )
+
+        # for degree in degreeList:
+        #     degreeId = degree.attrs['id']
+        #     # self.logger.debug(degreeId)
+        #     yield SplashFormRequest(self.base_major_url,
+        #                             formdata={'method': 'subCategoryMl',
+        #                                       'key': degreeId},
+        #                             callback=self.parse_field,
+        #                             meta={'degreeId': degreeId}
+        #                             )
 
     def parse_field(self, response):
 
@@ -544,16 +550,14 @@ class YanzhaowangSpider(CrawlSpider):
                 item['name'] = fieldName
                 item['degreeId'] = degreeId
                 yield item
-
-            for field in fieldList:
-                fieldId = field.xpath('@id').extract()[0]
-                # self.logger.debug(degreeId)
                 yield SplashFormRequest(self.base_major_url,
                                         formdata={'method': 'subCategoryMl',
-                                                'key': fieldId},
+                                                  'key': fieldId},
                                         callback=self.parse_subject,
                                         meta={'fieldId': fieldId}
                                         )
+
+
 
     def parse_subject(self, response):
 
@@ -574,9 +578,6 @@ class YanzhaowangSpider(CrawlSpider):
                 item['name'] = subjectName
                 item['fieldId'] = fieldId
                 yield item
-
-            for subject in subjectList:
-                subjectId = subject.xpath('@id').extract()[0]
                 yield SplashFormRequest(self.base_major_url,
                                         formdata={'method': 'subCategoryXk',
                                                 'key': subjectId},
