@@ -2,7 +2,7 @@
 # Scrapy for information of postgraduate college(Scrapy通用爬虫爬取国内考研信息资讯)
 
 ![language](https://img.shields.io/badge/language-Python-blue.svg)
-![platform](https://img.shields.io/badge/platform-ios|Linux|Windows-lightgrey.svg)
+![platform](https://img.shields.io/badge/platform-Drawin|Linux|Windows-lightgrey.svg)
 [![codebeat badge](https://codebeat.co/badges/f56ff221-9a8f-4bc2-bfa3-6885ea07bf4f)](https://codebeat.co/projects/github-com-colordoge-postgraduate-master) ![GitHub repo size](https://img.shields.io/github/repo-size/ColorDoge/postGraduate.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Scrapy.svg)
 
 <!-- TOC -->
@@ -48,9 +48,14 @@ ___
 
 4.MySQL
   
-## 三、使用技术介绍
+## 三、程序结构
 
 ___
+
+<div  align="center">    
+    <img src="./img/photo-2.png" height="500" width="600">
+</div>
+
 
 ## 四、爬取思路
 
@@ -65,6 +70,10 @@ ___
 ## 五、爬取分析
 
 ___
+
+<div  align="center">    
+    <img src="./img/photo.png" height="900" width="600">
+</div>
 
 ## 六、项目进度
 
